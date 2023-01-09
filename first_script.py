@@ -1,6 +1,8 @@
 import random
 import pygame
 
+from random_ia import random_IA
+
 def load_english_words(file_name):
     file = open(file_name)
     words = file.readlines()
@@ -403,6 +405,9 @@ while running:
                 if pos[1] > 140 and pos[1] < 160:
                     checkboxes = [checkboxes[0], False, False, False]
                     checkboxes[0] = not checkboxes[0]
+
+                    # Lancer l'IA Random
+                    GUESSES = random_IA(WORD_TO_GUESS)
 
             if pos[0] > WINDOW_WIDTH-260 and pos[0] < WINDOW_WIDTH-240:
                 if pos[1] > 187 and pos[1] < 207:
