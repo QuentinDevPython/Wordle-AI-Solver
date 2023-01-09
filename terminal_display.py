@@ -44,16 +44,29 @@ def check_word(word, guess):
     return rslt
 
 
-def start_game(input_func = input):
-    # Input function est une entrée de l'utilisateur par défaut, peut être changé pour connecter à une IA
+def start_game(IA = None):
+    # Input function est une entrée de l'utilisateur par défaut, peut être changé pour connecter à une IA.
+    # Une IA doit être une instance d'une class avec au moins les fonctions guess() et save_results()
     word_found = False
     while not word_found:
-        print("Entrez un mot à essayer (5 lettres): ")
-        guess = input_func().upper()
+        guess = ""
+        if IA :
+            # IA
+            guess = IA.guess()
+            print("Mot essayé par l'IA :", guess)
+        else : 
+            # Utilisateur
+            print("Entrez un mot à essayer (5 lettres): ")
+            guess = input().upper()
+        
         rslt = np.array(check_word(WORD_TO_GUESS, guess))
         print(rslt)
         if np.all([rslt==2]):
             print("Mot trouvé")
             word_found=True
-    
-start_game()
+        if IA : 
+            IA.save_results(guess,rslt)
+
+from IA_test import IATest
+
+start_game(IATest())
