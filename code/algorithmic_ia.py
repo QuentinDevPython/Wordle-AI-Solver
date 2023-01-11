@@ -82,7 +82,7 @@ class AlgorithmicIA:
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+            return self.GUESSES, self.WIN, self.DEFEAT
 
         for i in range(len(guess)):
 
@@ -117,4 +117,4 @@ class AlgorithmicIA:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+        return self.GUESSES, self.WIN, self.DEFEAT

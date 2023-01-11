@@ -435,15 +435,13 @@ class Game:
 
                     for chance_number in range(1, algorithmic_ia.CHANCES+1):
                         
-                        self.GUESSES, WIN, DEFEAT, nb_words = algorithmic_ia.algorithmic_IA(
+                        self.GUESSES, WIN, DEFEAT = algorithmic_ia.algorithmic_IA(
                             chance_number
                         )
 
                         self.draw_window()
                         
                         if WIN:
-                            count_win += 1
-                            nb_word_to_guess.append(nb_words)
                             self.print_win_state()
 
                         if WIN or DEFEAT:
