@@ -4,8 +4,19 @@ from utils import WordDictionary
 
 
 class RandomIA:
+    """A class representing the computer player (random IA) 
+    in the Wordle game.
+    """
 
     def __init__(self, WORD_TO_GUESS, GUESSES):
+        """
+        Initialize the computer player.
+        
+        Args:
+            WORD_TO_GUESS (str): the word that the computer is trying to guess.
+            GUESSES (list): a list to store the guesses made by the computer.
+        """
+
         self.CHANCES = 6
         self.letters_not_to_touch = []
         self.WIN = False
@@ -17,6 +28,18 @@ class RandomIA:
 
 
     def random_IA(self, chance_number):
+        """
+        Perform a turn for the computer player.
+        
+        Args:
+            chance_number (int): the number of chances the computer has left to make a correct guess.
+        
+        Returns:
+            tuple: A tuple containing the following elements:
+                - list: the guesses made by the computer so far
+                - bool: whether the computer has won the game
+                - bool: whether the computer has lost the game
+        """
 
         guess = random.choice(self.words_to_keep).upper()
         self.GUESSES.append(guess)

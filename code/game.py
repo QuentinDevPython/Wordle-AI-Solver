@@ -6,8 +6,15 @@ from utils import WordDictionary
 from random_ia import RandomIA
 
 class Game:
+    """The Game class is the main driver of the Wordle game. It sets up the game, 
+    handles user input and controls the game loop. 
+    """
 
     def __init__(self):
+        """The initializer sets up the basic structure of the game, 
+        initializing variables and pygame library. Also it sets up 
+        the window size, colors, font, guesses, letters, etc.
+        """
 
         # Get English dictionary
         self.words_file = "dictionary_words_5.txt"
@@ -91,6 +98,16 @@ class Game:
 
 
     def determine_color(self, guess, j):
+        """Determine the color of the letter based on whether the 
+        guess is correct, partially correct, or incorrect.
+        
+        Args:
+            guess (str): The current guess word
+            j (int): The index of the letter in the word
+        Returns:
+            tuple: The RGB color code
+        """
+
         letter = guess[j]
         if letter == self.WORD_TO_GUESS[j]:
             return self.GREEN
@@ -115,20 +132,43 @@ class Game:
 
 
     def determine_color_alphabet(self):
-        letters_to_color = {}
-        for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            letters_to_color[letter] = self.GREY
+        """Determine the color of the letters in alphabet based 
+        on the letters that have been guessed correctly 
+        and the letters that are present in the word to guess.
 
-        for word in self.GUESSES:
-            for letter in word:
-                if letter in self.WORD_TO_GUESS:
-                    letters_to_color[letter] = self.GREEN
+        Returns:
+            list: position letters with their assigned color
+        """
 
-        return letters_to_color
+        ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        ALPHABET_POSITIONS = []
+        count = 0
+        positions = []
+
+        for i in range(4):
+            j_range = 7
+            if i == 3:
+                for j in range(1,6):
+                    ALPHABET_POSITIONS.append(((i,j), ALPHABET[count]))
+                    count += 1
+            else:
+                for j in range(7):
+                    ALPHABET_POSITIONS.append(((i,j), ALPHABET[count]))
+                    count += 1
+
+        for i in range(len(ALPHABET_POSITIONS)):
+            for word in self.GUESSES:
+                if ALPHABET_POSITIONS[i][1] in word and ALPHABET_POSITIONS[i][1] in self.WORD_TO_GUESS:
+                    positions.append((ALPHABET_POSITIONS[i][0], self.GREEN))
+                elif ALPHABET_POSITIONS[i][1] in word:
+                    positions.append((ALPHABET_POSITIONS[i][0], self.GREY))
+                    
+        return positions
 
     
     def draw_word_guesses(self):
-        # Draw words guesses grid
+        """Draw the current guesses as a grid of letter squares on the screen"""
+
         y = self.TOP_MARGIN//2
         for i in range(6):
             x = self.WINDOW_WIDTH//5
@@ -158,6 +198,8 @@ class Game:
 
 
     def draw_letters_guesses(self):
+        """Draw the alphabet letters as a grid of letter squares on the screen"""
+        
         # Draw unguessed letters
         y = self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2 + 50
 
@@ -206,7 +248,7 @@ class Game:
 
 
     def draw_checkbox_IA(self):
-        # Liste de choix - IA -
+        """Draw the checkboxes on the screen and fill them if they are pressed"""
 
         # CheckBox 1
         checkbox1 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 90, 20, 20)
@@ -257,7 +299,8 @@ class Game:
 
 
     def show_correct_answer(self):
-        # Show correct answer after game over
+        """Show the correct answer on the screen after gameover"""
+
         if len(self.GUESSES) == 6 and self.GUESSES[5] != self.WORD_TO_GUESS:
             GAME_OVER = True
             letters = self.LETTERS_FONT.render(self.WORD_TO_GUESS, False, self.GREY)
@@ -266,10 +309,15 @@ class Game:
 
 
     def update_screen(self):
+        """Updates the screen to reflect the current state of the game"""
+        
         pygame.display.flip()
 
 
     def draw_window(self):
+        """This function is responsible for drawing the window of the game and 
+        updating its contents.
+        """
 
         # Background
         self.screen.fill("white")
@@ -284,10 +332,12 @@ class Game:
 
         self.update_screen()
 
-        
-
 
     def validate_guess_word(self):
+        """This function add the guess word to the guesses list if the word is validated, 
+        and reinitialize the input
+        """
+
         if len(self.INPUT) == 5 and self.INPUT.lower() in self.ENGLISH_WORDS_5_LETTERS:
             self.GUESSES.append(self.INPUT)
             self.GAME_OVER = True if self.INPUT == self.WORD_TO_GUESS else False
@@ -297,16 +347,25 @@ class Game:
 
 
     def write_letter(self, event):
+        """This function adds the letter associated with the key pressed to the input string.
+        Args:
+            event: pygame.event, event that contains the key pressed
+        """
+
         if len(self.INPUT) < 5 and not self.GAME_OVER:
             self.INPUT = self.INPUT + event.unicode.upper()
 
 
     def erase_letter(self):
+        """Erases the last letter from the input string"""
+
         if len(self.INPUT) > 0:
             self.INPUT = self.INPUT[:len(self.INPUT)-1]
 
     
     def restart_game(self):
+        """Restart the game by reseting the game state"""
+
         self.checkboxes = [False, False, False, False]
         self.GAME_OVER = False
         self.WORD_TO_GUESS = random.choice(self.ENGLISH_WORDS_5_LETTERS).upper()
@@ -315,6 +374,7 @@ class Game:
 
     
     def print_win_state(self):
+        """Show a win message on the screen when an IA wins the game"""
         letters = self.LETTERS_FONT.render('IA WINS', False, self.GREY)
         surface = letters.get_rect(center = (self.WINDOW_WIDTH//2.3 - 10, self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2))
         self.screen.blit(letters, surface)
@@ -322,6 +382,13 @@ class Game:
 
 
     def check_mouse_click_on_boxes(self, pos):
+        """This function will be called when the user clicks on the grid of letters.
+        It will check if the mouse click is inside an IA box, and if so, it will launch 
+        the corresponding IA and update the game state accordingly.
+        
+        Args:
+            pos: tuple, position of the cursor where the click is made.
+        """
 
         # Random IA Box
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:

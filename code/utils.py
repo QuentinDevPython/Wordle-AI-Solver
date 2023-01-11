@@ -1,5 +1,5 @@
 class WordDictionary:
-    """A class that loads words from a file and make them available for other class """
+    """A class that loads words from a file and make them available for other class"""
 
     def __init__(self):
         pass
