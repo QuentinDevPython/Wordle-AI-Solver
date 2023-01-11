@@ -30,7 +30,8 @@ class IAMiniMax:
 
         for i, (letter, result) in enumerate(zip(word,result_vector)):
             if result==0: # Pas présente
-                letters_count[letter] = 0 
+                if letter not in letters_count:
+                    letters_count[letter] = 0 
             else : # Présente
                 # On l'ajoute dans le compteur
                 if letter in letters_count:
@@ -75,6 +76,10 @@ class IAMiniMax:
 
 
 ia = IAMiniMax(5,"dictionary_words_5.txt")
-ia.save_results("badzz", [2,2,1,0,0])
-# ia.previous_results
+ia.save_results("mazzz", [2,2,0,0,0])
 ia.reduce_words()
+print("\n\n")
+ia.save_results("iillc", [1,0,0,0,2])
+ia.reduce_words()
+
+# ia.previous_results
