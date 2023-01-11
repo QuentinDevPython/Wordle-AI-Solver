@@ -4,6 +4,8 @@ import time
 
 from utils import WordDictionary
 from random_ia import RandomIA
+from algorithmic_ia import AlgorithmicIA
+
 
 class Game:
     """The Game class is the main driver of the Wordle game. It sets up the game, 
@@ -397,6 +399,7 @@ class Game:
                 self.checkboxes[0] = not self.checkboxes[0]
 
                 if self.checkboxes[0]:
+
                     random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
                     for chance_number in range(1, random_ia.CHANCES+1):
@@ -425,6 +428,34 @@ class Game:
             if pos[1] > 187 and pos[1] < 207:
                 self.checkboxes = [False, self.checkboxes[1], False, False]
                 self.checkboxes[1] = not self.checkboxes[1]
+
+                if self.checkboxes[1]:
+
+                    algorithmic_ia = AlgorithmicIA(self.WORD_TO_GUESS, self.GUESSES)
+
+                    for chance_number in range(1, algorithmic_ia.CHANCES+1):
+                        
+                        self.GUESSES, WIN, DEFEAT, nb_words = algorithmic_ia.algorithmic_IA(
+                            chance_number
+                        )
+
+                        self.draw_window()
+                        
+                        if WIN:
+                            count_win += 1
+                            nb_word_to_guess.append(nb_words)
+                            self.print_win_state()
+
+                        if WIN or DEFEAT:
+                            time.sleep(5)
+                            self.restart_game()
+                            break
+
+                        self.update_screen()
+
+                        # Random wait time - To humanize the input of values
+                        time.sleep(random.uniform(0, 2))
+
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 232 and pos[1] < 252:

@@ -1,9 +1,11 @@
 import random
+from collections import defaultdict
 
 from utils import WordDictionary
 
 
-class RandomIA:
+
+class AlgorithmicIA:
     """A class representing the computer player (random IA) 
     in the Wordle game.
     """
@@ -27,7 +29,7 @@ class RandomIA:
         self.GUESSES = GUESSES
 
 
-    def random_IA(self, chance_number):
+    def algorithmic_IA(self, chance_number):
         """
         Perform a turn for the computer player.
         
@@ -40,14 +42,47 @@ class RandomIA:
                 - bool: whether the computer has won the game
                 - bool: whether the computer has lost the game
         """
+        ########################
+        ###### IA LOGIC ########
+        ########################
 
-        guess = random.choice(self.words_to_keep).upper()
+        letter_count = defaultdict(lambda: [0]*5)
+
+        for word in self.words_to_keep:
+            # Boucle sur les lettres
+            for i in range(len(word)):
+                letter_count[word[i]][i] += 1
+
+        sorted_letter_count = dict(sorted(letter_count.items(), key=lambda x: x[0]))
+
+        # Initialisation de l'index et du poids pour le mot avec le plus de poids
+        best_word_index = -1
+        best_word_weight = 0
+
+        # Boucle sur les mots
+        for i, word in enumerate(self.words_to_keep):
+            # Poids pour le mot en cours
+            weight = 0
+            # Boucle sur les lettres
+            for j, letter in enumerate(word):
+                weight += sorted_letter_count[letter][j]
+            # Mise à jour de l'index et du poids si on a trouvé un meilleur mot
+            if weight > best_word_weight:
+                best_word_index = i
+                best_word_weight = weight
+
+
+        ########################
+        ##### END IA LOGIC #####
+        ########################
+
+        guess = self.words_to_keep[best_word_index].upper()
         self.GUESSES.append(guess)
 
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         for i in range(len(guess)):
 
@@ -82,4 +117,4 @@ class RandomIA:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
