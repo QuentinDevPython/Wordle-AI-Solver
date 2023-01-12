@@ -21,31 +21,19 @@ class AlgorithmicIA:
 
         self.CHANCES = 6
         self.letters_not_to_touch = []
+        self.letters_found = []
         self.WIN = False
         self.DEFEAT = False
         self.words_file = "dictionary_words_5.txt"
         self.words_to_keep = WordDictionary().load_words(self.words_file)
         self.all_words = WordDictionary().load_words(self.words_file)
+        self.all_words = [word.upper() for word in self.all_words]
         self.WORD_TO_GUESS = WORD_TO_GUESS
         self.GUESSES = GUESSES
 
+    
+    def occurrence_logic(self):
 
-    def algorithmic_IA(self, chance_number):
-        """
-        Perform a turn for the computer player.
-        
-        Args:
-            chance_number (int): the number of chances the computer has left to make a correct guess.
-        
-        Returns:
-            tuple: A tuple containing the following elements:
-                - list: the guesses made by the computer so far
-                - bool: whether the computer has won the game
-                - bool: whether the computer has lost the game
-        """
-        ########################
-        ###### IA LOGIC ########
-        ########################
 
         letter_count = defaultdict(lambda: [0]*5)
 
@@ -73,35 +61,72 @@ class AlgorithmicIA:
                 best_word_weight = weight
         #if there is only one letter left and multiple letters to try, this section will find the best word to try
         
-        if len(self.letters_not_to_touch)==4 and chance_number<=4:
+        guess = self.words_to_keep[best_word_index].upper()
+        self.GUESSES.append(guess) 
+
+        return guess
+
+
+    def algorithmic_IA(self, chance_number):
+        """
+        Perform a turn for the computer player.
+        
+        Args:
+            chance_number (int): the number of chances the computer has left to make a correct guess.
+        
+        Returns:
+            tuple: A tuple containing the following elements:
+                - list: the guesses made by the computer so far
+                - bool: whether the computer has won the game
+                - bool: whether the computer has lost the game
+        """
+        ########################
+        ###### IA LOGIC ########
+        ########################
+
+        print('LEN :',len(self.letters_found))
+        print('NB :', chance_number)
+
+        if len(self.letters_found)==4 and chance_number<=4:
+            print('ok')
             #find all the words that contains all the letters to keep
-            matching_words = [word for word in self.all_words if set(self.letters_not_to_touch).issubset(set(word))]
+            matching_words = [word.upper() for word in self.words_to_keep if set(self.letters_found).issubset(set(word.upper()))]
+            print(matching_words)
             #check if there is more than 2 words to try
             if len(matching_words)>2:
+                print('ok2')
                 #extract all the remaining letters to test from the previous words
-                letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_not_to_touch)]))     
+                letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
+                print(letters_to_test)  
                 #find the word that test most remaining letters
-                test_word = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(test_word)
-                return self.GUESSES, self.WIN, self.DEFEAT
-  
+                guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
+                print(guess)
+                self.GUESSES.append(guess)
+                #return self.GUESSES, self.WIN, self.DEFEAT
+
+            else:
+                guess = self.occurrence_logic()
+
+        else:
+            guess = self.occurrence_logic()
+
 
         ########################
         ##### END IA LOGIC #####
         ########################
 
-        guess = self.words_to_keep[best_word_index].upper()
-        self.GUESSES.append(guess)   
+          
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         for i in range(len(guess)):
 
             # Si la lettre est à la bonne place et pas déjà trouvée
             if guess[i] == self.WORD_TO_GUESS[i] and i not in self.letters_not_to_touch:
                 self.letters_not_to_touch.append(i)
+                self.letters_found.append(guess[i])
                 self.words_to_keep = [word for word in self.words_to_keep if word[i] == guess[i].lower()]
 
         # Si la lettre est dans le mot mais pas à la bonne place
@@ -131,4 +156,4 @@ class AlgorithmicIA:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number

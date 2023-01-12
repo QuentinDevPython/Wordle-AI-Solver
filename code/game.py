@@ -431,28 +431,38 @@ class Game:
 
                 if self.checkboxes[1]:
 
-                    algorithmic_ia = AlgorithmicIA(self.WORD_TO_GUESS, self.GUESSES)
+                    nb_win = 0
+                    nb_words = []
 
-                    for chance_number in range(1, algorithmic_ia.CHANCES+1):
-                        
-                        self.GUESSES, WIN, DEFEAT = algorithmic_ia.algorithmic_IA(
-                            chance_number
-                        )
+                    for i in range(3):
 
-                        self.draw_window()
-                        
-                        if WIN:
-                            self.print_win_state()
+                        algorithmic_ia = AlgorithmicIA(self.WORD_TO_GUESS, self.GUESSES)
 
-                        if WIN or DEFEAT:
-                            time.sleep(5)
-                            self.restart_game()
-                            break
+                        for chance_number in range(1, algorithmic_ia.CHANCES+1):
+                            
+                            self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                                chance_number
+                            )
 
-                        self.update_screen()
+                            self.draw_window()
+                            
+                            if WIN:
+                                self.print_win_state()
+                                nb_win += 1
+                                nb_words.append(nb)
 
-                        # Random wait time - To humanize the input of values
-                        time.sleep(random.uniform(0, 2))
+                            if WIN or DEFEAT:
+                                #time.sleep(5)
+                                self.restart_game()
+                                break
+
+                            self.update_screen()
+
+                            # Random wait time - To humanize the input of values
+                            #time.sleep(random.uniform(0, 2))
+
+                    print('WIN :', nb_win)
+                    print(nb_words)
 
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
