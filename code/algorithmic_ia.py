@@ -87,10 +87,10 @@ class AlgorithmicIA:
             
             for i in range(5):
                 if guess[i] == letter:
-                    if i < j:
-                        n_occurrence += 1
                     if letter == self.WORD_TO_GUESS[i]:
                         n_correct += 1
+                    elif i <= j:
+                        n_occurrence += 1
 
             if n_target - n_correct - n_occurrence >= 0:
                 return "ORANGE"
@@ -114,8 +114,6 @@ class AlgorithmicIA:
                 - bool: whether the computer has lost the game
         """
 
-        check_entire_word = False
-
         if len(self.letters_found)==4 and chance_number<=4:
             #find all the words that contains all the letters to keep
             matching_words = [word.upper() for word in self.words_to_keep if set(self.letters_found).issubset(set(word.upper()))]
@@ -126,8 +124,6 @@ class AlgorithmicIA:
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
                 self.GUESSES.append(guess)
-                check_entire_word = True
-                #return self.GUESSES, self.WIN, self.DEFEAT
 
             else:
                 guess = self.occurrence_logic()
@@ -141,13 +137,11 @@ class AlgorithmicIA:
             self.WIN = True
             return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
-
         # Connaître les couleurs renvoyées par le jeu
         colors = []
         for j in range(5):
             color = self.determine_color_for_ia(guess, j)
             colors.append((guess[j], color))
-
 
         # Boucle sur le mot suggéré
         for i in range(len(guess)):
@@ -182,10 +176,6 @@ class AlgorithmicIA:
                     elif colors[index_occurrence][1] == "GREY":
                         # Enlever touts les mots contenant cette lettre
                         self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() not in word]
-
-                # Si trois occurrences de la lettre dans guess
-                else:
-                    pass
 
             # Si orange
             if colors[i][1] == "ORANGE":

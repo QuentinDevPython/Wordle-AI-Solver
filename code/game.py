@@ -120,10 +120,10 @@ class Game:
             
             for i in range(5):
                 if guess[i] == letter:
-                    if i < j:
-                        n_occurrence += 1
                     if letter == self.WORD_TO_GUESS[i]:
                         n_correct += 1
+                    elif i <= j:
+                        n_occurrence += 1
 
             if n_target - n_correct - n_occurrence >= 0:
                 return self.ORANGE
