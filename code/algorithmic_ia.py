@@ -59,7 +59,6 @@ class AlgorithmicIA:
             if weight > best_word_weight:
                 best_word_index = i
                 best_word_weight = weight
-        #if there is only one letter left and multiple letters to try, this section will find the best word to try
         
         guess = self.words_to_keep[best_word_index].upper()
         self.GUESSES.append(guess) 
@@ -80,28 +79,20 @@ class AlgorithmicIA:
                 - bool: whether the computer has won the game
                 - bool: whether the computer has lost the game
         """
-        ########################
-        ###### IA LOGIC ########
-        ########################
 
-        print('LEN :',len(self.letters_found))
-        print('NB :', chance_number)
+        check_entire_word = False
 
         if len(self.letters_found)==4 and chance_number<=4:
-            print('ok')
             #find all the words that contains all the letters to keep
             matching_words = [word.upper() for word in self.words_to_keep if set(self.letters_found).issubset(set(word.upper()))]
-            print(matching_words)
             #check if there is more than 2 words to try
             if len(matching_words)>2:
-                print('ok2')
                 #extract all the remaining letters to test from the previous words
                 letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
-                print(letters_to_test)  
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                print(guess)
                 self.GUESSES.append(guess)
+                check_entire_word = True
                 #return self.GUESSES, self.WIN, self.DEFEAT
 
             else:
@@ -109,11 +100,6 @@ class AlgorithmicIA:
 
         else:
             guess = self.occurrence_logic()
-
-
-        ########################
-        ##### END IA LOGIC #####
-        ########################
 
           
         # Si le mot est trouvé
@@ -142,6 +128,15 @@ class AlgorithmicIA:
                         # On enlève les mots qui contiennent cette lettre à la mauvaise position
                         self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() != word[i]]
                         break
+            
+            if check_entire_word:
+
+                for j in range(len(self.WORD_TO_GUESS)):
+                    if guess[i] == self.WORD_TO_GUESS[j] and i != j:
+                        # On ne garde que les mots contenant cette lettre
+                        self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() in word]
+                        break
+
         
         # Si la lettre n'est pas dans le mot
         for i in range(len(guess)):

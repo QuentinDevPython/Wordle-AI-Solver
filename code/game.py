@@ -434,7 +434,7 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(3):
+                    for i in range(3000):
 
                         algorithmic_ia = AlgorithmicIA(self.WORD_TO_GUESS, self.GUESSES)
 
