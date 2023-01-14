@@ -22,9 +22,12 @@ class Game:
         self.words_file = "dictionary_words_5.txt"
         self.ENGLISH_WORDS_5_LETTERS = WordDictionary().load_words(self.words_file)
 
+        self.response_words_file = "dictionary_words_answers.tkt"
+        self.WORDLE_ANSWERS_5_LETTERS = WordDictionary().load_words(self.response_words_file)
+
         # Randomly choose a word to find in the game
         self.WORD_TO_GUESS = random.choice(
-            self.ENGLISH_WORDS_5_LETTERS
+            self.WORDLE_ANSWERS_5_LETTERS
         ).upper()
 
         # Init pygame
@@ -370,7 +373,7 @@ class Game:
 
         self.checkboxes = [False, False, False, False]
         self.GAME_OVER = False
-        self.WORD_TO_GUESS = random.choice(self.ENGLISH_WORDS_5_LETTERS).upper()
+        self.WORD_TO_GUESS = random.choice(self.WORDLE_ANSWERS_5_LETTERS).upper()
         self.GUESSES = []
         self.INPUT = ""
 
@@ -400,28 +403,38 @@ class Game:
 
                 if self.checkboxes[0]:
 
-                    random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
+                    nb_win = 0
+                    nb_words = []
 
-                    for chance_number in range(1, random_ia.CHANCES+1):
-                        
-                        self.GUESSES, WIN, DEFEAT = random_ia.random_IA(
-                            chance_number
-                        )
+                    for i in range(3000):
 
-                        self.draw_window()
-                        
-                        if WIN:
-                            self.print_win_state()
+                        random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
-                        if WIN or DEFEAT:
-                            time.sleep(5)
-                            self.restart_game()
-                            break
+                        for chance_number in range(1, random_ia.CHANCES+1):
+                            
+                            self.GUESSES, WIN, DEFEAT, nb = random_ia.random_IA(
+                                chance_number
+                            )
 
-                        self.update_screen()
+                            self.draw_window()
+                            
+                            if WIN:
+                                self.print_win_state()
+                                nb_win += 1
+                                nb_words.append(nb)
 
-                        # Random wait time - To humanize the input of values
-                        time.sleep(random.uniform(0, 2))
+                            if WIN or DEFEAT:
+                                #time.sleep(5)
+                                self.restart_game()
+                                break
+
+                            self.update_screen()
+
+                            # Random wait time - To humanize the input of values
+                            #time.sleep(random.uniform(0, 2))
+
+                    print('WIN :', nb_win)
+                    print(nb_words)
 
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
