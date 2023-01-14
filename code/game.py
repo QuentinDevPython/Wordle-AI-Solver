@@ -447,7 +447,9 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(3000):
+                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
+
+                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
                         algorithmic_ia = AlgorithmicIA(self.WORD_TO_GUESS, self.GUESSES)
 
@@ -463,6 +465,9 @@ class Game:
                                 self.print_win_state()
                                 nb_win += 1
                                 nb_words.append(nb)
+
+                            if DEFEAT:
+                                print(self.WORD_TO_GUESS)
 
                             if WIN or DEFEAT:
                                 #time.sleep(5)
