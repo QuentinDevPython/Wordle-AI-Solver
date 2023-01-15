@@ -17,7 +17,9 @@ class TerminalDisplay:
             word_to_guess = random.choice(self.ENGLISH_WORDS_5_LETTERS)
             
         word_found = False
+        turn = 0
         while not word_found:
+            turn += 1
             guess = ""
             if IA :
                 # IA
@@ -31,8 +33,9 @@ class TerminalDisplay:
             rslt = np.array(check_word(word_to_guess, guess))
             print(rslt)
             if np.all([rslt==2]):
-                print("Mot trouvé")
+                print("Mot trouvé en ",turn,"coups")
                 word_found=True
             if IA : 
                 IA.save_results(guess,rslt)
                 print("possible words now : ", len(IA.possible_words))
+
