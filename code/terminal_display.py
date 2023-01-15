@@ -3,10 +3,12 @@ import numpy as np
 from utils import WordDictionary, check_word
 
 class TerminalDisplay:
-    ENGLISH_WORDS_5_LETTERS:list[str]
+    guess_words:list[str]
+    target_words:list[str]
 
     def __init__(self) -> None:
-        self.ENGLISH_WORDS_5_LETTERS = WordDictionary().load_words('dictionary_words_5.txt')
+        self.guess_words = WordDictionary().load_words('dictionary_words_5.txt')
+        self.target_words = WordDictionary().load_words('dictionary_words_answers.txt')
         
 
     def start_game(self, IA = None, word_to_guess=None):
@@ -14,7 +16,7 @@ class TerminalDisplay:
         # Une IA doit être une instance d'une class avec au moins les fonctions guess() et save_results()
 
         if not word_to_guess :
-            word_to_guess = random.choice(self.ENGLISH_WORDS_5_LETTERS)
+            word_to_guess = random.choice(self.target_words)
             
         word_found = False
         turn = 0
@@ -28,7 +30,7 @@ class TerminalDisplay:
             else : 
                 # Utilisateur
                 print("Entrez un mot à essayer (5 lettres): ")
-                guess = input().upper()
+                guess = input()
             
             rslt = np.array(check_word(word_to_guess, guess))
             print(rslt)

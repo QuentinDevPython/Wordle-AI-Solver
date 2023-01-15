@@ -20,13 +20,14 @@ class IAMiniMax:
     known_bad_positions:np.ndarray
     total_count_letters:dict # lettre -> MINIMUM de présence dans le mot cible
 
-    def __init__(self, word_size, word_file):
+    def __init__(self, word_size, word_guess_file,word_answer_file):
         self.previous_results = {}
         self.known_positions=np.full(word_size, "")
         self.known_bad_positions=np.full(word_size,None)
         self.total_count_letters=dict()
-        self.words = WordDictionary().load_words(word_file)
-        self.possible_words = self.words
+        self.words = WordDictionary().load_words(word_guess_file)
+        self.possible_words = WordDictionary().load_words(word_answer_file)
+        # self.possible_words = self.words
         # print()
 
 
@@ -91,7 +92,7 @@ class IAMiniMax:
     
     def evaluate_guess(self, guess):
         '''
-        Evalue un guess potentiel : Trouve la taille des partitions en fonctions des différents résultats possibles
+        Evalue un guess potentiel : Trouve la taille des partitions en fonction des différents résultats possibles
         '''
         array_guess = np.array(list(guess))
         # Cherche les resultats que pourrait avoir ce mot :
