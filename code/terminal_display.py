@@ -37,7 +37,8 @@ class TerminalDisplay:
             if np.all([rslt==2]):
                 print("Mot trouvé en ",turn,"coups")
                 word_found=True
+                return turn
             if IA : 
                 IA.save_results(guess,rslt)
-                print("possible words now : ", len(IA.possible_words))
+                # print("possible words now : ", len(IA.possible_words))
 

@@ -1,3 +1,4 @@
+from collections import defaultdict
 import random
 import time
 import numpy as np
@@ -19,16 +20,16 @@ class IAMiniMax:
     known_positions:np.ndarray
     known_bad_positions:np.ndarray
     total_count_letters:dict # lettre -> MINIMUM de présence dans le mot cible
+    speed_factor:bool
 
-    def __init__(self, word_size, word_guess_file,word_answer_file):
+    def __init__(self, word_size, word_guess_file,word_answer_file, speed_factor=0):
         self.previous_results = {}
         self.known_positions=np.full(word_size, "")
         self.known_bad_positions=np.full(word_size,None)
         self.total_count_letters=dict()
         self.words = WordDictionary().load_words(word_guess_file)
         self.possible_words = WordDictionary().load_words(word_answer_file)
-        # self.possible_words = self.words
-        # print()
+        self.speed_factor = speed_factor
 
 
     def save_results(self, word, result_vector, update_self=True):
@@ -77,16 +78,11 @@ class IAMiniMax:
         }
 
     def reduce_possible_words(self):
-        # print("total_count_letters",self.total_count_letters)
-        # print("known_positions", self.known_positions)
-        # print("known_bad_positions", self.known_bad_positions)
         self.possible_words = reduce_words(self.possible_words,
                         self.total_count_letters,
                         self.known_positions,
                         self.known_bad_positions
                         )             
-        # print("\nRESULT :")
-        # print("possible_words",self.possible_words)
 
 
     
@@ -94,59 +90,18 @@ class IAMiniMax:
         '''
         Evalue un guess potentiel : Trouve la taille des partitions en fonction des différents résultats possibles
         '''
-        array_guess = np.array(list(guess))
-        # Cherche les resultats que pourrait avoir ce mot :
-        result = np.full(len(array_guess), -1)
-
-        # Evalue score de base
-        for i, letter in enumerate(array_guess):
-            good_letter = self.known_positions[i]
-            count = self.total_count_letters.get(letter)
-            if count == None :
-                # Aucune info sur la lettre : degré de liberté
-                continue
-            if good_letter and good_letter == letter:
-                # La lettre est bonne
-                result[i] = 2
-            if count == 0:
-                # La lettre n'est pas présente dans le mot
-                result[i] = 0
-
-
-        # Remplacer les -1 par chaque possibilité de resultats (0,1,2)
-        results = []
-        replace_indexes = np.where(result==-1)[0]
-        possible_rslt = itertools.product([0,1,2],repeat=len(replace_indexes))
-        for combination in possible_rslt:
-            new_result = result.copy()
-            for i, idx in enumerate(replace_indexes):
-                new_result[idx] = combination[i]
-            results.append(new_result)
-
-        # Trouver les partitions de toutes ces possibilitées de resultats :
-        # On ne sauvegarde que la taille de la partition
-        partitions_len = []
-        for r in results:
-            # new_informations = self.save_results(guess,r,update_self=False)
-            # # print(new_informations)
-            # partition = reduce_words(self.possible_words,
-            #             new_informations["total_count_letters"],
-            #             new_informations["known_positions"],
-            #             new_informations["known_bad_positions"]
-            #             )
-            # partitions_len.append(len(partition))
-
-            # Check word
-            partition_len = 0
-            for w in self.possible_words:
-                s = check_word(w,guess)
-                if all(r == s):
-                    partition_len += 1
-            partitions_len.append(partition_len)
+        
+        partitions_len = defaultdict(lambda: 0)
+        # Check word
+        for w in self.possible_words:
+            r = check_word(w,guess)
+            partitions_len[str(r)] += 1
+            
 
         # Le score attribué à ce guess est la taille de la plus grande partition (le plus faible est le meilleur)
-        # print("guess :",guess," //  score :", max(partitions_len))
-        return max(partitions_len)
+        score = max(partitions_len.values())
+        # print("guess :",guess," //  score :", score)
+        return score
     
     def get_scores_async(self, words=None, nb_proc=cpu_count()):
         words = words if words else self.words
@@ -156,29 +111,31 @@ class IAMiniMax:
                         "guess" : w,
                         "result":pool.apply_async(self.evaluate_guess, (w,))
                     } for w in words]
-                # scores = dict([{f"{res['guess']}" : res["result"].get(timeout=100)} for res in async_results])
                 scores = {f"{res['guess']}" : res["result"].get(timeout=100) for res in async_results}
-                # scores = {w:pool.apply_async(self.evaluate_guess, (w,)).get(timeout=100) for w in words}
                 return scores
 
         
             
-    def find_next_guess(self, words = None, fast=False):
+    def find_next_guess(self, words = None):
         scores = []
-
+        if len(self.possible_words)<=2:
+            # Opti : si <=2 on ne cherche pas et on tente au hasard
+            print("Seulement deux mots possible :",self.possible_words)
+            best_guess = random.choice(self.possible_words)
+            while best_guess in self.previous_results:
+                best_guess = random.choice(self.possible_words)
+            return best_guess
         
         words = words if words else self.words
         
-        if fast : # Opti 
+        if self.speed_factor : # Opti 
             pw_len = len(self.possible_words)
-            # keep = len(words)*(5/pw_len) if pw_len>10 else len(words)
-            keep = (len(words)/2)*(100/pw_len)
-            # keep = len(words)-pw_len*100
-            # keep = 3
+            keep = len(words)/pw_len*100/self.speed_factor
+
+            keep = len(words)/5 if keep<len(words)/5 else keep
             words = random.sample(words,int(keep)) if keep<len(words) else words
-            print("random sample size :", len(words))
-            
-        print(f"Evaluation des scores async sur {cpu_count()} procs")
+            print("random sample size :", len(words), "  //  pw len :",pw_len)
+
 
         scores = self.get_scores_async(words)
         best_guess = min(scores,key=scores.get)
@@ -186,36 +143,20 @@ class IAMiniMax:
             scores.pop(best_guess)
             best_guess = min(scores,key=scores.get)
 
-        # for w in words:
-        #     score = self.evaluate_guess(w)   
-        #     if score == 1:
-        #         # Ce guess sépare parfaitement les mots possible
-        #         return w
-        #     scores.append(score)
-
-        # recursive 
-
         # Le meilleur prochain guess est celui avec le plus petit score possible
-        # return self.words[np.argmin(scores)]
-        print("best : ", best_guess, "  //  score :",min(scores.values()))
+        # print("best : ", best_guess, "  //  score :",min(scores.values()))
         return best_guess
 
-    # def find_next_guess_async(self, fast=False):
-        
-
-
     
-    def guess(self, fast = True):
-        start_time = time.time()
+    def guess(self):
+        # start_time = time.time()
         if len(self.previous_results)==0:
             return "salet" # A priori le meilleur mot de départ mais pourrait être un mot choisis au hasard
         if len(self.possible_words)==1:
             # Plus qu'un mot possible : on a trouvé !
             return self.possible_words[0]
-        if len(self.possible_words) < 10:
-            fast=False
-        best_guess = self.find_next_guess(fast=fast)
-        exec_time = time.time()-start_time
-        print("==== Temps d'exec :", int(exec_time),"s")
+        best_guess = self.find_next_guess()
+        # exec_time = time.time()-start_time
+        # print("==== Temps d'exec :", int(exec_time),"s")
         return best_guess
 
