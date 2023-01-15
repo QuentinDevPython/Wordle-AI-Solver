@@ -1,3 +1,4 @@
+from collections import Counter
 import time
 
 import numpy as np
@@ -12,22 +13,29 @@ if __name__ == '__main__':
     term = TerminalDisplay()
     scores = []
     times = []
-    # Vitesse (Plus grand, plus rapide. 0 pour ne pas accelerer)
-    speed=20 
-    # Note : 40s sans, 20s avec 10, 15s avec 20
-    
+
+    # Mode rapide :
+    fast=True 
     # Changer le nombre d'essais pour faire les moyennes
-    n_try = 1
+    n_try = 400
 
     for i in range(n_try):
+        print(f"====== {i+1}/{n_try} ======")
         start_time = time.time()
-        score = term.start_game(IAMiniMax(5, 'dictionary_words_5.txt','dictionary_words_answers.txt',speed_factor=speed))
+        score = term.start_game(IAMiniMax(5, 'dictionary_words_5.txt','dictionary_words_answers.txt',fast_mode=fast))
         exec_time = int(time.time()-start_time)
-        print("========= Temps d'exec :", exec_time,"s")
-        print()
+        print(f"\nTemps d'exec : {exec_time} s")
+        
         scores.append(score)
         times.append(exec_time)
-    if n_try>1:
-        print("Score moyen : ",np.mean(scores))
-        print("Temps moyen : ",np.mean(times),"s")
+        if n_try>1:
+            print("Score moyen : ",np.mean(scores))
+            print("Scores : ",Counter(scores))
+            print("Temps moyen : ",np.mean(times))
+        print()
+    # if n_try>1:
+    #     print()
+    #     print("Score moyen final : ",np.mean(scores))
+    #     print("Scores final : ",Counter(scores))
+    #     print("Temps moyen final : ",np.mean(times),"s")
     

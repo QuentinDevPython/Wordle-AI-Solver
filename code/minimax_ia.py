@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import cache
 import random
 import time
 import numpy as np
@@ -20,16 +21,16 @@ class IAMiniMax:
     known_positions:np.ndarray
     known_bad_positions:np.ndarray
     total_count_letters:dict # lettre -> MINIMUM de présence dans le mot cible
-    speed_factor:bool
+    fast_mode:bool
 
-    def __init__(self, word_size, word_guess_file,word_answer_file, speed_factor=0):
+    def __init__(self, word_size, word_guess_file,word_answer_file, fast_mode=0):
         self.previous_results = {}
         self.known_positions=np.full(word_size, "")
         self.known_bad_positions=np.full(word_size,None)
         self.total_count_letters=dict()
         self.words = WordDictionary().load_words(word_guess_file)
         self.possible_words = WordDictionary().load_words(word_answer_file)
-        self.speed_factor = speed_factor
+        self.fast_mode = fast_mode
 
 
     def save_results(self, word, result_vector, update_self=True):
@@ -85,15 +86,15 @@ class IAMiniMax:
                         )             
 
 
-    
-    def evaluate_guess(self, guess):
+    @cache
+    def evaluate_guess(self, guess, possible_words):
         '''
         Evalue un guess potentiel : Trouve la taille des partitions en fonction des différents résultats possibles
         '''
         
         partitions_len = defaultdict(lambda: 0)
         # Check word
-        for w in self.possible_words:
+        for w in possible_words:
             r = check_word(w,guess)
             partitions_len[str(r)] += 1
             
@@ -109,7 +110,7 @@ class IAMiniMax:
         with Pool(processes=nb_proc) as pool:
                 async_results = [{
                         "guess" : w,
-                        "result":pool.apply_async(self.evaluate_guess, (w,))
+                        "result":pool.apply_async(self.evaluate_guess, (w,tuple(self.possible_words)))
                     } for w in words]
                 scores = {f"{res['guess']}" : res["result"].get(timeout=100) for res in async_results}
                 return scores
@@ -128,13 +129,26 @@ class IAMiniMax:
         
         words = words if words else self.words
         
-        if self.speed_factor : # Opti 
+        if self.fast_mode : # Opti 
             pw_len = len(self.possible_words)
-            keep = len(words)/pw_len*100/self.speed_factor
-
-            keep = len(words)/5 if keep<len(words)/5 else keep
-            words = random.sample(words,int(keep)) if keep<len(words) else words
-            print("random sample size :", len(words), "  //  pw len :",pw_len)
+            w_len = len(words)
+            # On simplifie le problème en réduisant le nombre de mots 
+            # en fonction du nombre de mots possible
+            keep = 0
+            if pw_len > 100 :
+                # 1/3
+                keep = w_len/3
+            elif pw_len > 50 :
+                # 1/2
+                keep = w_len/2
+            elif pw_len > 20:
+                # 2/3
+                keep = 2*w_len/3
+            elif pw_len > 10:
+                # 3/4
+                keep = 3*w_len/4
+            words = random.sample(words,int(keep)) if keep else words
+            print("sample size :", len(words), "  //  pw len :",pw_len)
 
 
         scores = self.get_scores_async(words)
