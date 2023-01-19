@@ -1,9 +1,9 @@
-import pygame
-
-from game import Game
 
 
 if __name__ == "__main__":
+    import pygame
+    from game import Game
+    # Import ici pour éviter de l'importer en boucle depuis les multi precessing
 
     game = Game()
 

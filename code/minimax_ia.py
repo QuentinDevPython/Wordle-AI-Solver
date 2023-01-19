@@ -22,8 +22,11 @@ class IAMiniMax:
     known_bad_positions:np.ndarray
     total_count_letters:dict # lettre -> MINIMUM de présence dans le mot cible
     fast_mode:bool
+    cpu_count:int
 
-    def __init__(self, word_size, word_guess_file,word_answer_file, fast_mode=0):
+    def __init__(self, word_size, word_guess_file,word_answer_file, fast_mode=0, proc_count=0):
+        self.cpu_count = proc_count  if proc_count  else cpu_count()
+
         self.previous_results = {}
         self.known_positions=np.full(word_size, "")
         self.known_bad_positions=np.full(word_size,None)
@@ -33,7 +36,7 @@ class IAMiniMax:
         self.fast_mode = fast_mode
 
 
-    def save_results(self, word, result_vector, update_self=True):
+    def save_result(self, word, result_vector, update_self=True):
         '''
         Sauvegarde les nouveaux resultats et met à jour les lettres connues et leur nombre dans le mot cible
         '''
@@ -104,7 +107,8 @@ class IAMiniMax:
         # print("guess :",guess," //  score :", score)
         return score
     
-    def get_scores_async(self, words=None, nb_proc=cpu_count()):
+    def get_scores_async(self, words=None, nb_proc=None):
+        nb_proc = self.cpu_count
         words = words if words else self.words
         # print(f"Async sur {nb_proc} proc")
         with Pool(processes=nb_proc) as pool:
@@ -112,7 +116,17 @@ class IAMiniMax:
                         "guess" : w,
                         "result":pool.apply_async(self.evaluate_guess, (w,tuple(self.possible_words)))
                     } for w in words]
-                scores = {f"{res['guess']}" : res["result"].get(timeout=100) for res in async_results}
+                scores = {}
+                for res in async_results:
+                    rslt = res["result"].get(timeout=100)
+                    scores[res['guess']] = rslt
+                    if rslt==1:
+                        #Opti : On trouvera pas plus bas
+                        pool.close()
+                        print(len(scores)," size max 1")
+                        break
+                    
+                # scores = {f"{res['guess']}" : res["result"].get(timeout=100) for res in async_results}
                 return scores
 
         
@@ -151,7 +165,7 @@ class IAMiniMax:
             print("sample size :", len(words), "  //  pw len :",pw_len)
 
 
-        scores = self.get_scores_async(words)
+        scores = self.get_scores_async(words,self.cpu_count)
         best_guess = min(scores,key=scores.get)
         while best_guess in self.previous_results:
             scores.pop(best_guess)

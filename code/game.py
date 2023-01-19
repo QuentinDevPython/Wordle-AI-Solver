@@ -2,9 +2,15 @@ import pygame
 import random
 import time
 
-from utils import WordDictionary
+from utils import WordDictionary, check_word
 from random_ia import RandomIA
 from algorithmic_ia import AlgorithmicIA
+from minimax_ia import IAMiniMax
+from multiprocessing import cpu_count
+
+if __name__ != "__main__":
+    pass
+
 
 
 class Game:
@@ -22,7 +28,7 @@ class Game:
         self.words_file = "dictionary_words_5.txt"
         self.ENGLISH_WORDS_5_LETTERS = WordDictionary().load_words(self.words_file)
 
-        self.response_words_file = "dictionary_words_answers.tkt"
+        self.response_words_file = "dictionary_words_answers.txt"
         self.WORDLE_ANSWERS_5_LETTERS = WordDictionary().load_words(self.response_words_file)
 
         # Randomly choose a word to find in the game
@@ -482,11 +488,34 @@ class Game:
                     print('WIN :', nb_win)
                     print(nb_words)
 
-
+        # Minimax
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 232 and pos[1] < 252:
                 self.checkboxes = [False, False, self.checkboxes[2], False]
                 self.checkboxes[2] = not self.checkboxes[2]
+                if self.checkboxes[2]:
+                    cpu = int(cpu_count()*0.75)
+                    ia = IAMiniMax(5, 'dictionary_words_5.txt','dictionary_words_answers.txt',fast_mode=True, proc_count=cpu)
+                    self.GUESSES = []
+                    self.WORD_TO_GUESS = random.choice(self.WORDLE_ANSWERS_5_LETTERS)
+                    start_time = time.time()
+                    for i in range(5):
+                        
+                        guess = ia.guess()
+                        self.GUESSES.append(guess)
+                        self.update_screen()
+                        self.draw_window()
+                        print(self.GUESSES)
+                        if guess==self.WORD_TO_GUESS:
+                            self.print_win_state()
+                            break
+                            # nb_win += 1
+                            # nb_words.append(nb)
+                        rslt = check_word(self.WORD_TO_GUESS, guess)                            
+                        ia.save_result(guess, rslt)
+                    print("Temps : ",int(time.time()-start_time))
+
+
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 277 and pos[1] < 297:
