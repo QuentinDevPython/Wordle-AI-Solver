@@ -495,24 +495,31 @@ class Game:
                 self.checkboxes[2] = not self.checkboxes[2]
                 if self.checkboxes[2]:
                     cpu = int(cpu_count()*0.75)
-                    ia = IAMiniMax(5, 'dictionary_words_5.txt','dictionary_words_answers.txt',fast_mode=True, proc_count=cpu)
-                    self.GUESSES = []
-                    self.WORD_TO_GUESS = random.choice(self.WORDLE_ANSWERS_5_LETTERS)
+                    ia = IAMiniMax(5, 'dictionary_words_5.txt','dictionary_words_answers.txt', self.GUESSES, self.WORD_TO_GUESS, fast_mode=True, proc_count=cpu)
+                    #self.GUESSES = []
+                    #self.WORD_TO_GUESS = random.choice(self.WORDLE_ANSWERS_5_LETTERS)
                     start_time = time.time()
-                    for i in range(5):
-                        
-                        guess = ia.guess()
-                        self.GUESSES.append(guess)
-                        self.update_screen()
+                    for chance_number in range(1, ia.CHANCES+1):
+
+                        self.GUESSES, WIN, DEFEAT = ia.guess(chance_number)
                         self.draw_window()
-                        print(self.GUESSES)
-                        if guess==self.WORD_TO_GUESS:
+
+                        if WIN:
                             self.print_win_state()
+
+                        self.update_screen()
+
+                        if DEFEAT:
+                            print(self.WORD_TO_GUESS)
+
+                        if WIN or DEFEAT:
+                            time.sleep(10)
+                            self.restart_game()
                             break
-                            # nb_win += 1
-                            # nb_words.append(nb)
-                        rslt = check_word(self.WORD_TO_GUESS, guess)                            
-                        ia.save_result(guess, rslt)
+
+                        self.update_screen()
+                        rslt = check_word(self.WORD_TO_GUESS.lower(), self.GUESSES[-1].lower())                            
+                        ia.save_result(self.GUESSES[-1].lower(), rslt)
                     print("Temps : ",int(time.time()-start_time))
 
 
