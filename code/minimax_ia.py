@@ -128,7 +128,7 @@ class IAMiniMax:
                     if rslt==1:
                         #Opti : On trouvera pas plus bas
                         pool.close()
-                        print(len(scores)," size max 1")
+                        #print(len(scores)," size max 1")
                         break
                     
                 # scores = {f"{res['guess']}" : res["result"].get(timeout=100) for res in async_results}
@@ -140,7 +140,7 @@ class IAMiniMax:
         scores = []
         if len(self.possible_words)<=2:
             # Opti : si <=2 on ne cherche pas et on tente au hasard
-            print("Seulement deux mots possible :",self.possible_words)
+            #print("Seulement deux mots possible :",self.possible_words)
             best_guess = random.choice(self.possible_words)
             while best_guess in self.previous_results:
                 best_guess = random.choice(self.possible_words)
@@ -167,7 +167,7 @@ class IAMiniMax:
                 # 3/4
                 keep = 3*w_len/4
             words = random.sample(words,int(keep)) if keep else words
-            print("sample size :", len(words), "  //  pw len :",pw_len)
+            #print("sample size :", len(words), "  //  pw len :",pw_len)
 
 
         scores = self.get_scores_async(words,self.cpu_count)
@@ -185,25 +185,25 @@ class IAMiniMax:
         # start_time = time.time()
         if len(self.previous_results)==0:
             self.GUESSES.append("SALET")
-            return self.GUESSES, self.WIN, self.DEFEAT # A priori le meilleur mot de départ mais pourrait être un mot choisis au hasard
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number # A priori le meilleur mot de départ mais pourrait être un mot choisis au hasard
 
         if len(self.possible_words)==1:
             # Plus qu'un mot possible : on a trouvé !
             self.GUESSES.append(self.possible_words[0].upper())
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         best_guess = self.find_next_guess()
         self.GUESSES.append(best_guess.upper())
 
         if best_guess.upper() == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         elif chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         # exec_time = time.time()-start_time
         # print("==== Temps d'exec :", int(exec_time),"s")

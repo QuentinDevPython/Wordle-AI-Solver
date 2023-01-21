@@ -5,7 +5,7 @@ from utils import WordDictionary
 
 
 
-class AlgorithmicIA:
+class AlgorithmicIAV1:
     """A class representing the computer player (random IA) 
     in the Wordle game.
     """
@@ -26,16 +26,26 @@ class AlgorithmicIA:
         self.DEFEAT = False
         self.words_file = "dictionary_words_5.txt"
         self.words_to_keep = WordDictionary().load_words(self.words_file)
-        self.response_words_file = "dictionary_words_answers.tkt"
+        self.response_words_file = "dictionary_words_answers.txt"
         self.WORDLE_ANSWERS_5_LETTERS = WordDictionary().load_words(self.response_words_file)
         self.all_words = WordDictionary().load_words(self.words_file)
         self.all_words = [word.upper() for word in self.all_words]
         self.WORD_TO_GUESS = WORD_TO_GUESS
         self.GUESSES = GUESSES
 
+
+    def count_letters(self, word):
+
+        letter_counts = {}
+        for letter in word:
+            if letter in letter_counts:
+                letter_counts[letter] += 1
+            else:
+                letter_counts[letter] = 1
+        return letter_counts
+
     
     def occurrence_logic(self):
-
 
         letter_count = defaultdict(lambda: [0]*5)
 
@@ -66,7 +76,7 @@ class AlgorithmicIA:
                 best_word_weight = weight
         
         guess = self.words_to_keep[best_word_index].upper()
-        self.GUESSES.append(guess) 
+        self.GUESSES.append(guess)
 
         return guess
 
@@ -119,44 +129,8 @@ class AlgorithmicIA:
                 - bool: whether the computer has lost the game
         """
 
-        if len(self.letters_found)==4 and chance_number<=5:
-            #find all the words that contains all the letters to keep
-            #matching_words = [word.upper() for word in self.words_to_keep if set(self.letters_found).issubset(set(word.upper()))]
-            matching_words = [word.upper() for word in self.WORDLE_ANSWERS_5_LETTERS if set(self.letters_found).issubset(set(word.upper()))]
-            #check if there is more than 2 words to try
-            if len(matching_words)>2:
-                #extract all the remaining letters to test from the previous words
-                letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
-                #find the word that test most remaining letters
-                guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
-
-            else:
-                guess = self.occurrence_logic()
-
-        elif len(self.letters_found)==3 and chance_number<=4:
-
-            #find all the words that contains all the letters to keep
-            #matching_words = [word.upper() for word in self.words_to_keep if set(self.letters_found).issubset(set(word.upper()))]
-            matching_words = [word.upper() for word in self.WORDLE_ANSWERS_5_LETTERS if set(self.letters_found).issubset(set(word.upper()))]
-            #check if there is more than 2 words to try
-            if len(matching_words)>2:
-                #extract all the remaining letters to test from the previous words
-                letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
-                #find the word that test most remaining letters
-                guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
-
-            else:
-                guess = self.occurrence_logic()
-
-        # Lorsque trois lettres sont trouvées, on teste de nouvelles lettres de manière aléatoire
-        ## Solution : il faudrait tester un maximum de lettres au coup suivant (et pas des mots avec des lettres doubles ou des lettres déjà trouvées)
-
-        else:
-            guess = self.occurrence_logic()
-
-
+        guess = self.occurrence_logic()
+        
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
@@ -173,7 +147,6 @@ class AlgorithmicIA:
             # Si Vert
             if colors[i][1] == "GREEN" and i not in self.letters_not_to_touch:
                 # Garder tous les mots contenant la lettre à cette position
-                #self.words_to_keep = [word for word in self.words_to_keep if word[i] == guess[i].lower()]
                 self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[i] == guess[i].lower()]
                 self.letters_not_to_touch.append(i)
                 self.letters_found.append(guess[i])
@@ -184,7 +157,6 @@ class AlgorithmicIA:
                 # Si seule occurrence de la lettre dans guess
                 if nb_letter_occurrence == 1:
                     # Enlever touts les mots contenant cette lettre
-                    #self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() not in word]
                     self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() not in word]
                 # Si deux occurrences de la lettre dans guess
                 elif nb_letter_occurrence == 2:
@@ -192,17 +164,14 @@ class AlgorithmicIA:
                     # si cette autre occurrence est en vert
                     if colors[index_occurrence][1] == "GREEN":
                         # Enlever tous les mots contenant cette lettre aux autres positions
-                        #self.words_to_keep = [word for word in self.words_to_keep if word[index_occurrence] == guess[i].lower() and word.count(guess[i].lower()) == 1]
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence] == guess[i].lower() and word.count(guess[i].lower()) == 1]
                     # Si cette autre occurrence est en orange
                     elif colors[index_occurrence][1] == "ORANGE":
                         # Enlever tous les mots contenant cette lettre à cette position
-                        #self.words_to_keep = [word for word in self.words_to_keep if word[i] != guess[i].lower()]
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[i] != guess[i].lower()]
                     # si cette autre occurrence est en gris
                     elif colors[index_occurrence][1] == "GREY":
                         # Enlever touts les mots contenant cette lettre
-                        #self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() not in word]
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() not in word]
                 # Si trois occurrences de la lettre dans guess
                 elif nb_letter_occurrence == 3:
@@ -224,10 +193,8 @@ class AlgorithmicIA:
             # Si orange
             if colors[i][1] == "ORANGE":
                 # Garder uniquement les mots contenant cette lettre
-                #self.words_to_keep = [word for word in self.words_to_keep if guess[i].lower() in word]
                 self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() in word]
                 # Enlever tous les mots contenant la lettre à cette position
-                #self.words_to_keep = [word for word in self.words_to_keep if word[i] != guess[i].lower()]
                 self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[i] != guess[i].lower()]
 
         if chance_number == 6:

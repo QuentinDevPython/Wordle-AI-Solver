@@ -24,7 +24,7 @@ class RandomIA:
         self.DEFEAT = False
         self.words_file = "dictionary_words_5.txt"
         self.words_to_keep = WordDictionary().load_words(self.words_file)
-        self.response_words_file = "dictionary_words_answers.tkt"
+        self.response_words_file = "dictionary_words_answers.txt"
         self.WORDLE_ANSWERS_5_LETTERS = WordDictionary().load_words(self.response_words_file)
         self.WORD_TO_GUESS = WORD_TO_GUESS
         self.GUESSES = GUESSES
@@ -111,10 +111,8 @@ class RandomIA:
                 # Si deux occurrences de la lettre dans guess
                 elif nb_letter_occurrence == 2:
                     index_occurrence = [j for j in range(len(guess)) if guess[i] == guess[j] and i != j][0]
-                    print(index_occurrence)
                     # si cette autre occurrence est en vert
                     if colors[index_occurrence][1] == "GREEN":
-                        print('ok')
                         # Enlever tous les mots contenant cette lettre aux autres positions
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence] == guess[i].lower() and word.count(guess[i].lower()) == 1]
                     # Si cette autre occurrence est en orange
