@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # Mode rapide :
     fast=True 
     # Changer le nombre d'essais pour faire les moyennes
-    n_try = 400
+    n_try = 10
 
     for i in range(n_try):
         print(f"====== {i+1}/{n_try} ======")

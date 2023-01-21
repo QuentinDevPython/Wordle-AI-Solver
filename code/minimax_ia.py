@@ -120,7 +120,7 @@ class IAMiniMax:
                 async_results = [{
                         "guess" : w,
                         "result":pool.apply_async(self.evaluate_guess, (w,tuple(self.possible_words)))
-                    } for w in words]
+                    } for w in words if w not in self.previous_results]
                 scores = {}
                 for res in async_results:
                     rslt = res["result"].get(timeout=100)
@@ -172,9 +172,9 @@ class IAMiniMax:
 
         scores = self.get_scores_async(words,self.cpu_count)
         best_guess = min(scores,key=scores.get)
-        while best_guess in self.previous_results:
-            scores.pop(best_guess)
-            best_guess = min(scores,key=scores.get)
+        # while best_guess in self.previous_results:
+        #     scores.pop(best_guess)
+        #     best_guess = min(scores,key=scores.get)
 
         # Le meilleur prochain guess est celui avec le plus petit score possible
         # print("best : ", best_guess, "  //  score :",min(scores.values()))

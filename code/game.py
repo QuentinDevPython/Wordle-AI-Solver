@@ -510,7 +510,8 @@ class Game:
                             proc_count=cpu
                         )
 
-                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        # self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        self.WORD_TO_GUESS = "ADMIN"
 
                         for chance_number in range(1, ia.CHANCES+1):
 
