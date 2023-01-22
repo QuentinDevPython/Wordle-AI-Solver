@@ -5,6 +5,8 @@ import time
 from utils import WordDictionary, check_word
 from ia.random_ia import RandomIA
 from ia.algorithmic_ia_v1 import AlgorithmicIAV1
+from ia.algorithmic_ia_v2 import AlgorithmicIAV2
+from ia.algorithmic_ia_v3 import AlgorithmicIAV3
 from minimax_ia import IAMiniMax
 from multiprocessing import cpu_count
 
@@ -412,7 +414,11 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(3):
+                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
+
+                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+
+                        print(self.WORD_TO_GUESS)
 
                         random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
@@ -430,14 +436,14 @@ class Game:
                                 nb_words.append(nb)
 
                             if WIN or DEFEAT:
-                                time.sleep(5)
+                                #time.sleep(5)
                                 self.restart_game()
                                 break
 
                             self.update_screen()
 
                             # Random wait time - To humanize the input of values
-                            time.sleep(random.uniform(0, 2))
+                            #time.sleep(random.uniform(0, 2))
 
                     print('WIN :', nb_win)
                     print(nb_words)
@@ -453,9 +459,11 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(3):
+                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
 
-                        #self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+
+                        print(self.WORD_TO_GUESS)
 
                         algorithmic_ia = AlgorithmicIAV1(self.WORD_TO_GUESS, self.GUESSES)
 
@@ -476,14 +484,14 @@ class Game:
                                 print(self.WORD_TO_GUESS)
 
                             if WIN or DEFEAT:
-                                time.sleep(5)
+                                #time.sleep(5)
                                 self.restart_game()
                                 break
 
                             self.update_screen()
 
                             # Random wait time - To humanize the input of values
-                            time.sleep(random.uniform(0, 2))
+                            #time.sleep(random.uniform(0, 2))
 
                     print('WIN :', nb_win)
                     print(nb_words)
@@ -499,7 +507,7 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(500):
+                    for i in range(1):
 
                         ia = IAMiniMax(
                             5,
@@ -510,8 +518,8 @@ class Game:
                             proc_count=cpu
                         )
 
-                        # self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
-                        self.WORD_TO_GUESS = "ADMIN"
+                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        print(self.WORD_TO_GUESS)
 
                         for chance_number in range(1, ia.CHANCES+1):
 
