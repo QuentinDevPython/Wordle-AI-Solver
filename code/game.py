@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import pandas as pd
 
 from utils import WordDictionary, check_word
 from ia.random_ia import RandomIA
@@ -112,6 +113,9 @@ class Game:
                 self.WINDOW_HEIGHT
             )
         )
+
+        # Dataframe that stores all games states and results
+        self.df_state_action=pd.DataFrame(columns=["guess","colored","action"])
 
 
     def determine_color(self, guess, j):
@@ -493,11 +497,11 @@ class Game:
                     nb_words = []
 
 
-                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(0,5):#len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
-                        algorithmic_ia = AlgorithmicIAV2(self.WORD_TO_GUESS, self.GUESSES)
+                        algorithmic_ia = AlgorithmicIAV3(self.WORD_TO_GUESS, self.GUESSES)
 
                         for chance_number in range(1, algorithmic_ia.CHANCES+1):
                             
@@ -517,6 +521,7 @@ class Game:
 
                             if WIN or DEFEAT:
                                 #time.sleep(5)
+                                self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action()])
                                 self.restart_game()
                                 break
 
@@ -525,6 +530,7 @@ class Game:
                             # Random wait time - To humanize the input of values
                             #time.sleep(random.uniform(0, 2))
 
+                    self.df_state_action.to_csv("ia/RL_ia/data/training_set.csv")
                     print('WIN :', nb_win)
                     print(nb_words)
 
