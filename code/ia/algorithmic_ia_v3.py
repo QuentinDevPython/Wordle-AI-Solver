@@ -73,7 +73,6 @@ class AlgorithmicIAV3:
             words.update({word: score})
         
         guess = min(words, key=words.get).upper()
-        self.GUESSES.append(guess)
 
         return guess
 
@@ -125,7 +124,6 @@ class AlgorithmicIAV3:
                 - bool: whether the computer has won the game
                 - bool: whether the computer has lost the game
         """
-
         if len(self.letters_found)==4 and chance_number<=5:
             #find all the words that contains all the letters to keep
             matching_words = [word.upper() for word in self.WORDLE_ANSWERS_5_LETTERS if set(self.letters_found).issubset(set(word.upper()))]
@@ -135,7 +133,6 @@ class AlgorithmicIAV3:
                 letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
 
             else:
                 guess = self.occurrence_logic()
@@ -150,7 +147,6 @@ class AlgorithmicIAV3:
                 letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
 
             else:
                 guess = self.occurrence_logic()
@@ -166,7 +162,6 @@ class AlgorithmicIAV3:
                 letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
 
             else:
                 guess = self.occurrence_logic()
@@ -192,7 +187,6 @@ class AlgorithmicIAV3:
                 letters_to_test = list(set([letter for word in matching_words for letter in set(word) if letter not in set(self.letters_found)]))
                 #find the word that test most remaining letters
                 guess = max(self.all_words, key=lambda x: len(set(x).intersection(set(letters_to_test))))
-                self.GUESSES.append(guess)
 
             else:
                 guess = self.occurrence_logic()
@@ -201,6 +195,7 @@ class AlgorithmicIAV3:
         else:
             guess = self.occurrence_logic()
         
+        self.GUESSES.append(guess)
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
@@ -252,10 +247,10 @@ class AlgorithmicIAV3:
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[0]] == guess[i].lower() and word[index_occurrence[1]] == guess[i].lower() and word.count(guess[i].lower()) == 2]
                     # Si la première occurrence est verte
                     elif colors[index_occurrence[0]][1] == "GREEN":
-                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[0]] == guess[i].lower() and word.count(guess[i].lower()) == 1]
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[0]] == guess[i].lower() and word.count(guess[i].lower()) <= 2]
                     # Si la deuxième occurrence est verte
                     elif colors[index_occurrence[1]][1] == "GREEN":
-                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[1]] == guess[i].lower() and word.count(guess[i].lower()) == 1]
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[1]] == guess[i].lower() and word.count(guess[i].lower()) <= 2]
                     # Si les deux autres occurrences sont grises
                     elif colors[index_occurrence[0]][1] == "GREY" and colors[index_occurrence[1]][1] == "GREY":
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() not in word]

@@ -123,6 +123,22 @@ class RandomIA:
                     elif colors[index_occurrence][1] == "GREY":
                         # Enlever touts les mots contenant cette lettre
                         self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() not in word]
+                # Si trois occurrences de la lettre dans guess
+                elif nb_letter_occurrence == 3:
+                    index_occurrence = [j for j in range(len(guess)) if guess[i] == guess[j] and i != j]  
+                    # Si les deux occurrences sont vertes
+                    if colors[index_occurrence[0]][1] == "GREEN" and colors[index_occurrence[1]][1] == "GREEN":
+                        # Enlever tous les mots contenant cette lettre aux autres positions
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[0]] == guess[i].lower() and word[index_occurrence[1]] == guess[i].lower() and word.count(guess[i].lower()) == 2]
+                    # Si la première occurrence est verte
+                    elif colors[index_occurrence[0]][1] == "GREEN":
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[0]] == guess[i].lower() and word.count(guess[i].lower()) <= 2]
+                    # Si la deuxième occurrence est verte
+                    elif colors[index_occurrence[1]][1] == "GREEN":
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if word[index_occurrence[1]] == guess[i].lower() and word.count(guess[i].lower()) <= 2]
+                    # Si les deux autres occurrences sont grises
+                    elif colors[index_occurrence[0]][1] == "GREY" and colors[index_occurrence[1]][1] == "GREY":
+                        self.WORDLE_ANSWERS_5_LETTERS = [word for word in self.WORDLE_ANSWERS_5_LETTERS if guess[i].lower() not in word]
 
             # Si orange
             if colors[i][1] == "ORANGE":

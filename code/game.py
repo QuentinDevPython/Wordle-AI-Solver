@@ -10,9 +10,9 @@ from ia.algorithmic_ia_v3 import AlgorithmicIAV3
 from minimax_ia import IAMiniMax
 from multiprocessing import cpu_count
 
+
 if __name__ != "__main__":
     pass
-
 
 
 class Game:
@@ -90,12 +90,16 @@ class Game:
         checkbox2_pressed = False
         checkbox3_pressed = False
         checkbox4_pressed = False
+        checkbox5_pressed = False
+        checkbox6_pressed = False
 
         self.checkboxes = [
             checkbox1_pressed, 
             checkbox2_pressed,
             checkbox3_pressed,
-            checkbox4_pressed
+            checkbox4_pressed,
+            checkbox5_pressed,
+            checkbox6_pressed
         ]
 
         # Window title
@@ -282,8 +286,8 @@ class Game:
             pygame.draw.rect(self.screen, self.GREY, checkbox2, border_radius=3)
         pygame.draw.rect(self.screen, self.GREY, checkbox2, width=2)
 
-        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-148, self.TOP_MARGIN//2 + 147))
+        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V1 -", False, self.GREY)
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 147))
         self.screen.blit(ia, surface)
 
         # CheckBox 3
@@ -294,11 +298,11 @@ class Game:
             pygame.draw.rect(self.screen, self.GREY, checkbox3, border_radius=3)
         pygame.draw.rect(self.screen, self.GREY, checkbox3, width=2)
 
-        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - MINIMAX -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-163, self.TOP_MARGIN//2 + 191))
+        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V2 -", False, self.GREY)
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 191))
         self.screen.blit(ia, surface)
 
-        # CheckBox 3
+        # CheckBox 4
         checkbox4 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 225, 20, 20)
         if not self.checkboxes[3]:
             pygame.draw.rect(self.screen, self.GREY, checkbox4, width=2)
@@ -306,9 +310,37 @@ class Game:
             pygame.draw.rect(self.screen, self.GREY, checkbox4, border_radius=3)
         pygame.draw.rect(self.screen, self.GREY, checkbox4, width=2)
 
-        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - DEEP LEARNING -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-130, self.TOP_MARGIN//2 + 236))
+        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V3 -", False, self.GREY)
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 236))
         self.screen.blit(ia, surface)
+
+        # CheckBox 5
+        checkbox5 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 270, 20, 20)
+        if not self.checkboxes[3]:
+            pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
+        else:
+            pygame.draw.rect(self.screen, self.GREY, checkbox5, border_radius=3)
+        pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
+
+        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - MINIMAX -", False, self.GREY)
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-164, self.TOP_MARGIN//2 + 281))
+        self.screen.blit(ia, surface)
+
+        # CheckBox 6
+        checkbox6 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 315, 20, 20)
+        if not self.checkboxes[3]:
+            pygame.draw.rect(self.screen, self.GREY, checkbox6, width=2)
+        else:
+            pygame.draw.rect(self.screen, self.GREY, checkbox6, border_radius=3)
+        pygame.draw.rect(self.screen, self.GREY, checkbox6, width=2)
+
+        ia = self.LETTERS_FONT_VERY_SMALL.render("IA - DEEP LEARNING -", False, self.GREY)
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-132, self.TOP_MARGIN//2 + 327))
+        self.screen.blit(ia, surface)
+
+        # Restart button
+        restart_logo = pygame.image.load("restart_logo.png")
+        self.screen.blit(restart_logo, (self.WINDOW_WIDTH-200, self.TOP_MARGIN//2 + 420))
 
 
     def show_correct_answer(self):
@@ -379,7 +411,7 @@ class Game:
     def restart_game(self):
         """Restart the game by reseting the game state"""
 
-        self.checkboxes = [False, False, False, False]
+        self.checkboxes = [False, False, False, False, False, False]
         self.GAME_OVER = False
         self.WORD_TO_GUESS = random.choice(self.WORDLE_ANSWERS_5_LETTERS).upper()
         self.GUESSES = []
@@ -406,7 +438,7 @@ class Game:
         # Random IA Box
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 140 and pos[1] < 160:
-                self.checkboxes = [self.checkboxes[0], False, False, False]
+                self.checkboxes = [self.checkboxes[0], False, False, False, False, False]
                 self.checkboxes[0] = not self.checkboxes[0]
 
                 if self.checkboxes[0]:
@@ -451,21 +483,21 @@ class Game:
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 187 and pos[1] < 207:
-                self.checkboxes = [False, self.checkboxes[1], False, False]
+                self.checkboxes = [False, self.checkboxes[1], False, False, False, False]
                 self.checkboxes[1] = not self.checkboxes[1]
 
                 if self.checkboxes[1]:
 
+
                     nb_win = 0
                     nb_words = []
+
 
                     for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
-                        print(self.WORD_TO_GUESS)
-
-                        algorithmic_ia = AlgorithmicIAV1(self.WORD_TO_GUESS, self.GUESSES)
+                        algorithmic_ia = AlgorithmicIAV2(self.WORD_TO_GUESS, self.GUESSES)
 
                         for chance_number in range(1, algorithmic_ia.CHANCES+1):
                             
@@ -480,8 +512,8 @@ class Game:
                                 nb_win += 1
                                 nb_words.append(nb)
 
-                            if DEFEAT:
-                                print(self.WORD_TO_GUESS)
+                            # if DEFEAT:
+                            #     print(self.WORD_TO_GUESS)
 
                             if WIN or DEFEAT:
                                 #time.sleep(5)
@@ -499,7 +531,7 @@ class Game:
         # Minimax
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 232 and pos[1] < 252:
-                self.checkboxes = [False, False, self.checkboxes[2], False]
+                self.checkboxes = [False, False, self.checkboxes[2], False, False, False]
                 self.checkboxes[2] = not self.checkboxes[2]
                 if self.checkboxes[2]:
                     cpu = int(cpu_count()*0.75)
@@ -550,5 +582,11 @@ class Game:
 
         if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
             if pos[1] > 277 and pos[1] < 297:
-                self.checkboxes = [False, False, False, self.checkboxes[3]]
+                self.checkboxes = [False, False, False, self.checkboxes[3], False, False]
                 self.checkboxes[3] = not self.checkboxes[3]
+
+
+
+        if pos[0] > 750 and pos[0] < 815:
+            if pos[1] > 475 and pos[1] < 530:
+                self.restart_game()
