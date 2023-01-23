@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from utils import WordDictionary
 import pandas as pd
+import numpy as np
 
 
 class AlgorithmicIAV3:
@@ -278,27 +279,35 @@ class AlgorithmicIAV3:
         guesses = self.GUESSES
         #word to guess
         wtg = self.WORD_TO_GUESS
+
         #initialise the dataframe
-        df_state_action=pd.Dataframe(cols=["guess","colored","action"])
+        df_state_action=pd.DataFrame(columns=["guess","colored","action"])
         
         colored_guesses = []
         #get the colored version of each guess
-        for word in guesses:
-            word_output = [0] * 5
+        word_output = [[-1]*5]*6
+        for x, word in enumerate(guesses):
+            word_output[x]=[0]*5
             for i, letter in enumerate(word):
                 if letter == wtg[i]:
-                    word_output[i] = 2
+                    word_output[x][i] = 2
                 elif letter in wtg:
-                    word_output[i] = 1
+                    word_output[x][i] = 1
             colored_guesses.append(word_output)
-        game_dict={}
-        for i in range(len(guesses)-1):
+            game_dict={}
+        #for i in range(len(guesses)):
+            try :
+                action = guesses[x+1]
+            except:
+                action = ""
+            print(i)
             dict_state_action={
-                "guess":guesses[i],
-                "coloring":colored_guesses[i],
-                "action":guesses[i+1]
+                "guess":guesses[:x+1],
+                "colored":colored_guesses[x],
+                "action":action,
+                "answer":wtg
                 }
-        df_state_action=df_state_action.append(dict_state_action, ignore_index=True)
+            df_state_action=df_state_action.append(dict_state_action, ignore_index=True)
         return df_state_action
         
         
