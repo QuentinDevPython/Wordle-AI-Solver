@@ -538,19 +538,22 @@ class Game:
 
                     nb_win = 0
                     nb_words = []
+                    
+                    # 1157 -> 1400
+                    for i in range(1157, len(self.WORDLE_ANSWERS_5_LETTERS)):
 
-                    for i in range(1):
+                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
                         ia = IAMiniMax(
                             5,
-                            'dictionary_words_5.txt','dictionary_words_answers.txt',
+                            'dictionary_words_5.txt',
+                            'dictionary_words_answers.txt',
                             self.GUESSES,
                             self.WORD_TO_GUESS,
-                            fast_mode=True,
+                            fast_mode=False,
                             proc_count=cpu
                         )
 
-                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
                         print(self.WORD_TO_GUESS)
 
                         for chance_number in range(1, ia.CHANCES+1):
@@ -564,11 +567,17 @@ class Game:
                                 self.print_win_state()
                                 nb_win += 1
                                 nb_words.append(nb)
+                                print(self.GUESSES)
+                                print('NB_WORDS :', nb)
+                                print('\n')
                                 self.restart_game()
                                 #time.sleep(15)
                                 break
 
                             if DEFEAT:
+                                print(self.GUESSES)
+                                print('NB_WORDS :', nb)
+                                print('\n')
                                 self.restart_game()
                                 #time.sleep(15)
 

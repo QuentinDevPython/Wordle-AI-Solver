@@ -183,18 +183,22 @@ class IAMiniMax:
     
     def guess(self, chance_number):
         # start_time = time.time()
+        
         if len(self.previous_results)==0:
             self.GUESSES.append("SALET")
             return self.GUESSES, self.WIN, self.DEFEAT, chance_number # A priori le meilleur mot de départ mais pourrait être un mot choisis au hasard
 
-        if len(self.possible_words)==1:
+        elif len(self.possible_words)==1:
             # Plus qu'un mot possible : on a trouvé !
             self.GUESSES.append(self.possible_words[0].upper())
             self.WIN = True
             return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
-        best_guess = self.find_next_guess()
-        self.GUESSES.append(best_guess.upper())
+        else:
+            best_guess = self.find_next_guess()
+            self.GUESSES.append(best_guess.upper())
+
+        print(self.WORD_TO_GUESS)
 
         if best_guess.upper() == self.WORD_TO_GUESS:
             self.WIN = True
