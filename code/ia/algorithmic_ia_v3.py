@@ -2,7 +2,7 @@ import random
 from collections import defaultdict
 
 from utils import WordDictionary
-
+import pandas as pd
 
 
 class AlgorithmicIAV3:
@@ -266,3 +266,39 @@ class AlgorithmicIAV3:
             self.DEFEAT = True
 
         return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+
+
+    def save_state_action(self):
+        """
+        this function builds a dataframe with the current game guesses and results.
+        this data will be later used to train a deep learning model based on this algorithmic ai results.
+        We therefore store the guess, the colored result and the reulting action a each turn of the game.
+        """
+        #list of guesses
+        guesses = self.GUESSES
+        #word to guess
+        wtg = self.WORD_TO_GUESS
+        #initialise the dataframe
+        df_state_action=pd.Dataframe(cols=["guess","colored","action"])
+        
+        colored_guesses = []
+        #get the colored version of each guess
+        for word in guesses:
+            word_output = [0] * 5
+            for i, letter in enumerate(word):
+                if letter == wtg[i]:
+                    word_output[i] = 2
+                elif letter in wtg:
+                    word_output[i] = 1
+            colored_guesses.append(word_output)
+        game_dict={}
+        for i in range(len(guesses)-1):
+            dict_state_action={
+                "guess":guesses[i],
+                "coloring":colored_guesses[i],
+                "action":guesses[i+1]
+                }
+        df_state_action=df_state_action.append(dict_state_action, ignore_index=True)
+        return df_state_action
+        
+        
