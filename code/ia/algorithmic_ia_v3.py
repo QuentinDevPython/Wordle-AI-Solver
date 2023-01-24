@@ -289,6 +289,7 @@ class AlgorithmicIAV3:
         # colored_guesses = []
         #get the colored version of each guess
         word_output = [[-1 for _ in range(5)] for _ in range(6)]
+        #guide to one hot encode
         letter_to_index = {letter: index for index, letter in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}
         word_indices = [[letter_to_index[letter] for letter in word] for word in guesses]
         # one-hot encode the indices
