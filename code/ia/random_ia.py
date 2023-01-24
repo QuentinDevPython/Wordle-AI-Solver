@@ -1,7 +1,8 @@
 import random
 
 from utils import WordDictionary
-
+import pandas as pd
+import numpy as np
 
 class RandomIA:
     """A class representing the computer player (random IA) 
@@ -78,19 +79,22 @@ class RandomIA:
                 - bool: whether the computer has lost the game
         """
 
-        guess = random.choice(self.WORDLE_ANSWERS_5_LETTERS).upper()
+        if chance_number == 1:
+            guess = "SLATE"
+        else:
+            guess = random.choice(self.WORDLE_ANSWERS_5_LETTERS).upper()
         self.GUESSES.append(guess)
-
-        # Si le mot est trouvé
-        if guess == self.WORD_TO_GUESS:
-            self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         # Connaître les couleurs renvoyées par le jeu
         colors = []
         for j in range(5):
             color = self.determine_color_for_ia(guess, j)
             colors.append((guess[j], color))
+
+        # Si le mot est trouvé
+        if guess == self.WORD_TO_GUESS:
+            self.WIN = True
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
 
         # Boucle sur le mot suggéré
         for i in range(len(guess)):
@@ -150,4 +154,53 @@ class RandomIA:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+
+
+    def save_state_action(self, all_colors):
+        """
+        this function builds a dataframe with the current game guesses and results.
+        this data will be later used to train a deep learning model based on this algorithmic ai results.
+        We therefore store the guess, the colored result and the reulting action a each turn of the game.
+        """
+        #list of guesses
+        guesses = self.GUESSES
+        #word to guess
+        wtg = self.WORD_TO_GUESS
+
+        #initialise the dataframe
+        df_state_action=pd.DataFrame(columns=['guess','colored','action', 'answer'], index=range(1, len(guesses)))
+        
+        # colored_guesses = []
+        #get the colored version of each guess
+        word_output = [[-1 for _ in range(5)] for _ in range(6)]
+        #guide to one hot encode
+        letter_to_index = {letter: index for index, letter in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}
+        word_indices = [[letter_to_index[letter] for letter in word] for word in guesses]
+        # one-hot encode the indices
+        one_hot_words = []
+        for word in word_indices:
+            one_hot_words.append(np.eye(26)[word])        
+        wtg = [letter_to_index[letter] for letter in wtg]
+        wtg = np.eye(26)[wtg]
+        for x in range(len(guesses)):
+
+            try :
+                action = one_hot_words[x+1]
+            except:
+                action = ""
+            
+            colors = []
+            for i in range(len(all_colors[x])):
+                if all_colors[x][i][1] == "GREEN":
+                    colors.append(2)
+                elif all_colors[x][i][1] == "ORANGE":
+                    colors.append(1)
+                elif all_colors[x][i][1] == "GREY":
+                    colors.append(0)
+            word_output[x] = colors
+            df_state_action.loc[x+1] = [one_hot_words[:x+1],word_output.copy(), action,wtg]
+
+        return df_state_action
+        
+        

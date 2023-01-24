@@ -115,7 +115,7 @@ class Game:
         )
 
         # Dataframe that stores all games states and results
-        self.df_state_action=pd.DataFrame(columns=["guess","colored","action"])
+        self.df_state_action=pd.DataFrame(columns=["guess","colored","action", "answer"])
 
 
     def determine_color(self, guess, j):
@@ -450,37 +450,47 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for j in range(60):
 
-                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        print(j)
 
-                        print(self.WORD_TO_GUESS)
+                        for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
 
-                        random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
+                            self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
-                        for chance_number in range(1, random_ia.CHANCES+1):
-                            
-                            self.GUESSES, WIN, DEFEAT, nb = random_ia.random_IA(
-                                chance_number
-                            )
+                            print(self.WORD_TO_GUESS)
 
-                            self.draw_window()
-                            
-                            if WIN:
-                                self.print_win_state()
-                                nb_win += 1
-                                nb_words.append(nb)
+                            random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
-                            if WIN or DEFEAT:
-                                #time.sleep(5)
-                                self.restart_game()
-                                break
+                            all_colors = []
 
-                            self.update_screen()
+                            for chance_number in range(1, random_ia.CHANCES+1):
+                                
+                                self.GUESSES, WIN, DEFEAT, nb, colors = random_ia.random_IA(
+                                    chance_number
+                                )
 
-                            # Random wait time - To humanize the input of values
-                            #time.sleep(random.uniform(0, 2))
+                                all_colors.append(colors)
 
+                                self.draw_window()
+                                
+                                if WIN:
+                                    self.print_win_state()
+                                    nb_win += 1
+                                    nb_words.append(nb)
+                                    self.df_state_action = pd.concat([self.df_state_action,random_ia.save_state_action(all_colors)])
+
+                                if WIN or DEFEAT:
+                                    #time.sleep(5)
+                                    self.restart_game()
+                                    break
+
+                                self.update_screen()
+
+                                # Random wait time - To humanize the input of values
+                                #time.sleep(random.uniform(0, 2))
+
+                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia_2.csv")
                     print('WIN :', nb_win)
                     print(nb_words)
 

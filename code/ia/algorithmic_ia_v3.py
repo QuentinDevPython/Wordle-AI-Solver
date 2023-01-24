@@ -4,7 +4,6 @@ from collections import defaultdict
 from utils import WordDictionary
 import pandas as pd
 import numpy as np
-import torch
 
 class AlgorithmicIAV3:
     """A class representing the computer player (random IA) 
