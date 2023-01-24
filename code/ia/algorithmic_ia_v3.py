@@ -4,7 +4,7 @@ from collections import defaultdict
 from utils import WordDictionary
 import pandas as pd
 import numpy as np
-
+import torch
 
 class AlgorithmicIAV3:
     """A class representing the computer player (random IA) 
@@ -289,26 +289,22 @@ class AlgorithmicIAV3:
         # colored_guesses = []
         #get the colored version of each guess
         word_output = [[-1 for _ in range(5)] for _ in range(6)]
-        
+        letter_to_index = {letter: index for index, letter in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}
+        word_indices = [[letter_to_index[letter] for letter in word] for word in guesses]
+        # one-hot encode the indices
+        one_hot_words = []
+        for word in word_indices:
+            one_hot_words.append(np.eye(26)[word])        
+        wtg = [letter_to_index[letter] for letter in wtg]
+        wtg = np.eye(26)[wtg]
         for x in range(len(guesses)):
-            # word_output[x]=[0]*5
-            # for i, letter in enumerate(word):
-            #     if letter == wtg[i]:
-            #         word_output[x][i] = 2
-            #     elif letter in wtg:
-            #         word_output[x][i] = 1
-            
-            # colored_guesses = word_output
-            # print(x)
-            # print(colored_guesses)
 
             try :
-                action = guesses[x+1]
+                action = one_hot_words[x+1]
             except:
                 action = ""
             
             colors = []
-            #print(all_colors[x])
             for i in range(len(all_colors[x])):
                 if all_colors[x][i][1] == "GREEN":
                     colors.append(2)
@@ -316,10 +312,8 @@ class AlgorithmicIAV3:
                     colors.append(1)
                 elif all_colors[x][i][1] == "GREY":
                     colors.append(0)
-            #print(colors)
             word_output[x] = colors
-
-            df_state_action.loc[x+1] = [guesses[:x+1],word_output.copy(), action,wtg]
+            df_state_action.loc[x+1] = [one_hot_words[:x+1],word_output.copy(), action,wtg]
 
         return df_state_action
         
