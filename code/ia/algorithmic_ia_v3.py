@@ -297,8 +297,9 @@ class AlgorithmicIAV3:
             one_hot_words.append(np.eye(26)[word])        
         wtg = [letter_to_index[letter] for letter in wtg]
         wtg = np.eye(26)[wtg]
+        one_hot_words_list = [[[-1 for _ in range(26)] for _ in range(5)] for _ in range(6)]
         for x in range(len(guesses)):
-
+            one_hot_words_list[x] = one_hot_words[x]
             try :
                 action = one_hot_words[x+1]
             except:
@@ -313,7 +314,7 @@ class AlgorithmicIAV3:
                 elif all_colors[x][i][1] == "GREY":
                     colors.append(0)
             word_output[x] = colors
-            df_state_action.loc[x+1] = [one_hot_words[:x+1],word_output.copy(), action,wtg]
+            df_state_action.loc[x+1] = [one_hot_words_list.copy(),word_output.copy(), action,wtg]
 
         return df_state_action
         
