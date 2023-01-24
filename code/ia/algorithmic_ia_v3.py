@@ -197,16 +197,19 @@ class AlgorithmicIAV3:
             guess = self.occurrence_logic()
         
         self.GUESSES.append(guess)
-        # Si le mot est trouvé
-        if guess == self.WORD_TO_GUESS:
-            self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         # Connaître les couleurs renvoyées par le jeu
         colors = []
         for j in range(5):
             color = self.determine_color_for_ia(guess, j)
             colors.append((guess[j], color))
+
+        # Si le mot est trouvé
+        if guess == self.WORD_TO_GUESS:
+            self.WIN = True
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+
+        
 
         # Boucle sur le mot suggéré
         for i in range(len(guess)):
@@ -266,10 +269,10 @@ class AlgorithmicIAV3:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
 
 
-    def save_state_action(self):
+    def save_state_action(self, all_colors):
         """
         this function builds a dataframe with the current game guesses and results.
         this data will be later used to train a deep learning model based on this algorithmic ai results.
@@ -281,33 +284,43 @@ class AlgorithmicIAV3:
         wtg = self.WORD_TO_GUESS
 
         #initialise the dataframe
-        df_state_action=pd.DataFrame(columns=["guess","colored","action"])
+        df_state_action=pd.DataFrame(columns=['guess','colored','action', 'answer'], index=range(1, len(guesses)))
         
-        colored_guesses = []
+        # colored_guesses = []
         #get the colored version of each guess
-        word_output = [[-1]*5]*6
-        for x, word in enumerate(guesses):
-            word_output[x]=[0]*5
-            for i, letter in enumerate(word):
-                if letter == wtg[i]:
-                    word_output[x][i] = 2
-                elif letter in wtg:
-                    word_output[x][i] = 1
-            colored_guesses.append(word_output)
-            game_dict={}
-        #for i in range(len(guesses)):
+        word_output = [[-1 for _ in range(5)] for _ in range(6)]
+        
+        for x in range(len(guesses)):
+            # word_output[x]=[0]*5
+            # for i, letter in enumerate(word):
+            #     if letter == wtg[i]:
+            #         word_output[x][i] = 2
+            #     elif letter in wtg:
+            #         word_output[x][i] = 1
+            
+            # colored_guesses = word_output
+            # print(x)
+            # print(colored_guesses)
+
             try :
                 action = guesses[x+1]
             except:
                 action = ""
-            print(i)
-            dict_state_action={
-                "guess":guesses[:x+1],
-                "colored":colored_guesses[x],
-                "action":action,
-                "answer":wtg
-                }
-            df_state_action=df_state_action.append(dict_state_action, ignore_index=True)
+            
+            colors = []
+            #print(all_colors[x])
+            for i in range(len(all_colors[x])):
+                if all_colors[x][i][1] == "GREEN":
+                    colors.append(2)
+                elif all_colors[x][i][1] == "ORANGE":
+                    colors.append(1)
+                elif all_colors[x][i][1] == "GREY":
+                    colors.append(0)
+            #print(colors)
+            word_output[x] = colors
+
+            df_state_action.loc[x+1] = [guesses[:x+1],word_output.copy(), action,wtg]
+
         return df_state_action
         
         

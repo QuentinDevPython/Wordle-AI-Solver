@@ -503,11 +503,15 @@ class Game:
 
                         algorithmic_ia = AlgorithmicIAV3(self.WORD_TO_GUESS, self.GUESSES)
 
+                        all_colors = []
+
                         for chance_number in range(1, algorithmic_ia.CHANCES+1):
                             
-                            self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                            self.GUESSES, WIN, DEFEAT, nb, colors = algorithmic_ia.algorithmic_IA(
                                 chance_number
                             )
+
+                            all_colors.append(colors)
 
                             self.draw_window()
                             
@@ -521,7 +525,7 @@ class Game:
 
                             if WIN or DEFEAT:
                                 #time.sleep(5)
-                                self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action()])
+                                self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action(all_colors)])
                                 self.restart_game()
                                 break
 
@@ -546,7 +550,7 @@ class Game:
                     nb_words = []
                     
                     # 1157 -> 1400
-                    for i in range(1157, len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(1600, 2000):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 

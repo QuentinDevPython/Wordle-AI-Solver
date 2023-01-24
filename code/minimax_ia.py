@@ -198,8 +198,6 @@ class IAMiniMax:
             best_guess = self.find_next_guess()
             self.GUESSES.append(best_guess.upper())
 
-        print(self.WORD_TO_GUESS)
-
         if best_guess.upper() == self.WORD_TO_GUESS:
             self.WIN = True
             return self.GUESSES, self.WIN, self.DEFEAT, chance_number
