@@ -118,6 +118,25 @@ class Game:
         # Dataframe that stores all games states and results
         self.df_state_action=pd.DataFrame(columns={"guess": np.array([]),"colored": np.array([]),"action": np.array([]), "answer": np.array([])})
 
+        # Créer toutes les colonnes guess possibles de cette dataframe
+        for i in range(6):
+            for j in range(5):
+                for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                    'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                    self.df_state_action[f'guess_{i}_letter_position_{j}_{letter}'] = None
+
+        # Créer toutes les colonnes color possibles de cette dataframe
+        for i in range(6):
+            self.df_state_action[f'color_word_{i}_letter_1'] = None
+        
+        # Créer toutes les colonnes action possibles de cette dataframe
+        for i in range(5):
+            for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                self.df_state_action[f'action_letter_position_{i}_{letter}'] = None
+
 
     def determine_color(self, guess, j):
         """Determine the color of the letter based on whether the 
@@ -491,7 +510,27 @@ class Game:
                                 # Random wait time - To humanize the input of values
                                 #time.sleep(random.uniform(0, 2))
 
-                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia_2.csv")
+                    self.df_state_action.fillna(-1, inplace=True)
+                    
+                    # liste des noms de colonnes à supprimer
+                    cols_to_drop = [
+                        'action',
+                        'guess',
+                        'colored',
+                        'answer',
+                        'word_color_0',
+                        'word_color_1',
+                        'word_color_2',
+                        'word_color_3',
+                        'word_color_4',
+                        'word_color_5'
+                    ]
+
+                    # suppression des colonnes
+                    self.df_state_action = self.df_state_action.drop(columns=cols_to_drop)
+
+                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia.csv")
+
                     print('WIN :', nb_win)
                     print(nb_words)
 
@@ -508,7 +547,7 @@ class Game:
                     nb_words = []
 
 
-                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):#len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(1):#len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
@@ -549,9 +588,26 @@ class Game:
                             #time.sleep(random.uniform(0, 2))
 
                     self.df_state_action.fillna(-1, inplace=True)
-                    self.df_state_action.to_csv("ia/RL_ia/data/training_set.csv")
-                    print(self.df_state_action.shape)
                     
+                    # liste des noms de colonnes à supprimer
+                    cols_to_drop = [
+                        'action',
+                        'guess',
+                        'colored',
+                        'answer',
+                        'word_color_0',
+                        'word_color_1',
+                        'word_color_2',
+                        'word_color_3',
+                        'word_color_4',
+                        'word_color_5'
+                    ]
+
+                    # suppression des colonnes
+                    self.df_state_action = self.df_state_action.drop(columns=cols_to_drop)
+
+                    self.df_state_action.to_csv("ia/RL_ia/data/training_set.csv")
+
                     print('WIN :', nb_win)
                     print(nb_words)
 

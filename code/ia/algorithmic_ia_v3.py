@@ -371,5 +371,4 @@ class AlgorithmicIAV3:
                 df_state_action_one_hot = pd.concat([df_state_action_one_hot, df_letter_one_hot], axis=1)
 
         return df_state_action_one_hot
-        
-        
+    
