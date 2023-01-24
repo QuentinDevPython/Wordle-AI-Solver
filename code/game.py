@@ -2,6 +2,7 @@ import pygame
 import random
 import time
 import pandas as pd
+import numpy as np
 
 from utils import WordDictionary, check_word
 from ia.random_ia import RandomIA
@@ -115,7 +116,7 @@ class Game:
         )
 
         # Dataframe that stores all games states and results
-        self.df_state_action=pd.DataFrame(columns=["guess","colored","action", "answer"])
+        self.df_state_action=pd.DataFrame(columns={"guess": np.array([]),"colored": np.array([]),"action": np.array([]), "answer": np.array([])})
 
 
     def determine_color(self, guess, j):
@@ -507,7 +508,7 @@ class Game:
                     nb_words = []
 
 
-                    for i in range(0,5):#len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):#len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
@@ -535,7 +536,10 @@ class Game:
 
                             if WIN or DEFEAT:
                                 #time.sleep(5)
-                                self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action(all_colors)])
+                                try:
+                                    self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action(all_colors)], axis=0)
+                                except:
+                                    pass
                                 self.restart_game()
                                 break
 
@@ -544,7 +548,10 @@ class Game:
                             # Random wait time - To humanize the input of values
                             #time.sleep(random.uniform(0, 2))
 
+                    self.df_state_action.fillna(-1, inplace=True)
                     self.df_state_action.to_csv("ia/RL_ia/data/training_set.csv")
+                    print(self.df_state_action.shape)
+                    
                     print('WIN :', nb_win)
                     print(nb_words)
 
