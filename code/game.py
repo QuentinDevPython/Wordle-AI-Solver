@@ -128,7 +128,8 @@ class Game:
 
         # Créer toutes les colonnes color possibles de cette dataframe
         for i in range(6):
-            self.df_state_action[f'color_word_{i}_letter_1'] = None
+            for j in range(1,6):
+                self.df_state_action[f'color_word_{i}_letter_{j}'] = None
         
         # Créer toutes les colonnes action possibles de cette dataframe
         for i in range(5):
@@ -470,15 +471,11 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
-                    for j in range(60):
-
-                        print(j)
+                    for j in range(1):
 
                         for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                             self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
-
-                            print(self.WORD_TO_GUESS)
 
                             random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
@@ -520,13 +517,7 @@ class Game:
                         'action',
                         'guess',
                         'colored',
-                        'answer',
-                        'word_color_0',
-                        'word_color_1',
-                        'word_color_2',
-                        'word_color_3',
-                        'word_color_4',
-                        'word_color_5'
+                        'answer'
                     ]
 
                     # suppression des colonnes
@@ -550,7 +541,7 @@ class Game:
                     nb_words = []
 
 
-                    for i in range(1):#len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(5):#len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
@@ -597,13 +588,7 @@ class Game:
                         'action',
                         'guess',
                         'colored',
-                        'answer',
-                        'word_color_0',
-                        'word_color_1',
-                        'word_color_2',
-                        'word_color_3',
-                        'word_color_4',
-                        'word_color_5'
+                        'answer'
                     ]
 
                     # suppression des colonnes

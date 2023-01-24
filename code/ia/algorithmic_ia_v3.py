@@ -279,31 +279,37 @@ class AlgorithmicIAV3:
         """
         #list of guesses
         guesses = self.GUESSES
-        #word to guess
-        wtg = self.WORD_TO_GUESS
-
-        #initialise the dataframe
-        df_state_action=pd.DataFrame(columns={'guess': np.array([]),'colored': np.array([]),'action': np.array([]), 'answer': np.array([])}, index=range(1, len(guesses)))
         
-        # colored_guesses = []
         #get the colored version of each guess
         word_output = np.array([[-1 for _ in range(5)] for _ in range(6)])
-        #guide to one hot encode
-        #letter_to_index = {letter: index for index, letter in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}
-        #word_indices = [[letter_to_index[letter] for letter in word] for word in guesses]
-        # one-hot encode the indices
-        # one_hot_words = []
-        # for word in word_indices:
-        #     one_hot_words.append(np.eye(26)[word])        
-        # wtg = np.array([letter_to_index[letter] for letter in wtg])
-        # wtg = np.eye(26)[wtg]
-        #one_hot_words_list = np.array([[[-1 for _ in range(26)] for _ in range(5)] for _ in range(6)])
+
+        df_state_action_one_hot_final = pd.DataFrame(columns={"guess": np.array([]),"colored": np.array([]),"action": np.array([]), "answer": np.array([])})
+
+        # Créer toutes les colonnes guess possibles de cette dataframe
+        for i in range(6):
+            for j in range(5):
+                for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                    'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                    df_state_action_one_hot_final[f'guess_{i}_letter_position_{j}_{letter}'] = None
+
+        # Créer toutes les colonnes color possibles de cette dataframe
+        for i in range(6):
+            for j in range(1,6):
+                df_state_action_one_hot_final[f'color_word_{i}_letter_{j}'] = None
+        
+        # Créer toutes les colonnes action possibles de cette dataframe
+        for i in range(5):
+            for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                df_state_action_one_hot_final[f'action_letter_position_{i}_{letter}'] = None
+
+
         for x in range(len(guesses)):
-            #one_hot_words_list[x] = one_hot_words[x]
-            try :
+            
+            if x != len(guesses)-1:
                 action = guesses[x+1]
-            except:
-                action = ""
             
             colors = []
             for i in range(len(all_colors[x])):
@@ -314,11 +320,11 @@ class AlgorithmicIAV3:
                 elif all_colors[x][i][1] == "GREY":
                     colors.append(0)
             word_output[x] = colors
-            df_state_action.loc[x+1] = [guesses[:x+1],word_output.copy(), action,wtg]
 
-            df_state_action_one_hot = pd.DataFrame()
 
-            count = 0
+            # création d'un dictionnaire vide
+            new_row = pd.Series(index = df_state_action_one_hot_final.columns)
+            df_state_action_one_hot_final = df_state_action_one_hot_final.append(new_row, ignore_index=True)
 
             # Boucle sur les mots dans guesses
             for j in range(len(guesses[:x+1])):
@@ -327,48 +333,27 @@ class AlgorithmicIAV3:
 
                 for i in range(5):
 
-                    word_column = pd.DataFrame([word], columns=['word'])
-
-                    # Sélection de la lettre à la position i dans chaque mot
-                    df_letter = word_column['word'].str[i]
-                    # Transformation en one-hot pour cette lettre
-                    df_letter_one_hot = df_letter.str.get_dummies()
-                    # Renommage des colonnes avec le numéro de la position
-                    df_letter_one_hot = df_letter_one_hot.add_prefix(f'guess_{count}_letter_position_{i}_')
-                    # Ajout des colonnes one-hot au DataFrame final
-                    df_state_action_one_hot = pd.concat([df_state_action_one_hot, df_letter_one_hot], axis=1)
-
-                count += 1
+                    letter = word[i]
+                    df_state_action_one_hot_final.at[x, f'guess_{j}_letter_position_{i}_{letter}'] = 1
 
             # Boucle pour chaque array de couleur
             for i in range(6):
 
                 colors_string = ','.join(map(str, word_output[i]))
 
-                df_colors_one_hot = pd.DataFrame([colors_string], columns=[f'word_color_{i}'])
+                colors_string = colors_string.split(",")
 
-                df_colors_one_hot[
-                    [
-                        f'color_word_{i}_letter_1',
-                        f'color_word_{i}_letter_2',
-                        f'color_word_{i}_letter_3',
-                        f'color_word_{i}_letter_4',
-                        f'color_word_{i}_letter_5'
-                    ]
-                ] = df_colors_one_hot[f'word_color_{i}'].str.split(',', expand=True)
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_1'] = colors_string[0]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_2'] = colors_string[1]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_3'] = colors_string[2]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_4'] = colors_string[3]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_5'] = colors_string[4]
 
-                df_state_action_one_hot = pd.concat([df_state_action_one_hot, df_colors_one_hot], axis=1)
+            if x != len(guesses)-1:
+                for i in range(5):
+                    
+                    letter = action[i]
+                    df_state_action_one_hot_final.at[x, f'action_letter_position_{i}_{letter}'] = 1
 
-            # Boucle pour chaque position dans le mot
-            for i in range(5):
-                # Sélection de la lettre à la position i dans chaque mot
-                df_letter = df_state_action['action'].str[i]
-                # Transformation en one-hot pour cette lettre
-                df_letter_one_hot = df_letter.str.get_dummies()
-                # Renommage des colonnes avec le numéro de la position
-                df_letter_one_hot = df_letter_one_hot.add_prefix(f'action_letter_position_{i}_')
-                # Ajout des colonnes one-hot au DataFrame final
-                df_state_action_one_hot = pd.concat([df_state_action_one_hot, df_letter_one_hot], axis=1)
-
-        return df_state_action_one_hot
+        return df_state_action_one_hot_final
     

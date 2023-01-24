@@ -165,30 +165,37 @@ class RandomIA:
         """
         #list of guesses
         guesses = self.GUESSES
-        #word to guess
-        wtg = self.WORD_TO_GUESS
-
-        #initialise the dataframe
-        df_state_action=pd.DataFrame(columns=['guess','colored','action', 'answer'], index=range(1, len(guesses)))
         
-        # colored_guesses = []
         #get the colored version of each guess
-        word_output = [[-1 for _ in range(5)] for _ in range(6)]
-        #guide to one hot encode
-        letter_to_index = {letter: index for index, letter in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}
-        word_indices = [[letter_to_index[letter] for letter in word] for word in guesses]
-        # one-hot encode the indices
-        one_hot_words = []
-        for word in word_indices:
-            one_hot_words.append(np.eye(26)[word])        
-        wtg = [letter_to_index[letter] for letter in wtg]
-        wtg = np.eye(26)[wtg]
-        for x in range(len(guesses)):
+        word_output = np.array([[-1 for _ in range(5)] for _ in range(6)])
 
-            try :
-                action = one_hot_words[x+1]
-            except:
-                action = ""
+        df_state_action_one_hot_final = pd.DataFrame(columns={"guess": np.array([]),"colored": np.array([]),"action": np.array([]), "answer": np.array([])})
+
+        # Créer toutes les colonnes guess possibles de cette dataframe
+        for i in range(6):
+            for j in range(5):
+                for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                    'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                    df_state_action_one_hot_final[f'guess_{i}_letter_position_{j}_{letter}'] = None
+
+        # Créer toutes les colonnes color possibles de cette dataframe
+        for i in range(6):
+            for j in range(1,6):
+                df_state_action_one_hot_final[f'color_word_{i}_letter_{j}'] = None
+        
+        # Créer toutes les colonnes action possibles de cette dataframe
+        for i in range(5):
+            for letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']:
+
+                df_state_action_one_hot_final[f'action_letter_position_{i}_{letter}'] = None
+
+
+        for x in range(len(guesses)):
+            
+            if x != len(guesses)-1:
+                action = guesses[x+1]
             
             colors = []
             for i in range(len(all_colors[x])):
@@ -199,8 +206,40 @@ class RandomIA:
                 elif all_colors[x][i][1] == "GREY":
                     colors.append(0)
             word_output[x] = colors
-            df_state_action.loc[x+1] = [one_hot_words[:x+1],word_output.copy(), action,wtg]
 
-        return df_state_action
-        
-        
+
+            # création d'un dictionnaire vide
+            new_row = pd.Series(index = df_state_action_one_hot_final.columns)
+            df_state_action_one_hot_final = df_state_action_one_hot_final.append(new_row, ignore_index=True)
+
+            # Boucle sur les mots dans guesses
+            for j in range(len(guesses[:x+1])):
+                
+                word = guesses[:x+1][j]
+
+                for i in range(5):
+
+                    letter = word[i]
+                    df_state_action_one_hot_final.at[x, f'guess_{j}_letter_position_{i}_{letter}'] = 1
+
+            # Boucle pour chaque array de couleur
+            for i in range(6):
+
+                colors_string = ','.join(map(str, word_output[i]))
+
+                colors_string = colors_string.split(",")
+
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_1'] = colors_string[0]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_2'] = colors_string[1]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_3'] = colors_string[2]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_4'] = colors_string[3]
+                df_state_action_one_hot_final.at[x, f'color_word_{i}_letter_5'] = colors_string[4]
+
+            if x != len(guesses)-1:
+                for i in range(5):
+                    
+                    letter = action[i]
+                    df_state_action_one_hot_final.at[x, f'action_letter_position_{i}_{letter}'] = 1
+
+        return df_state_action_one_hot_final
+    
