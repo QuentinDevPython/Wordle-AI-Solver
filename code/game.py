@@ -498,7 +498,10 @@ class Game:
                                     self.print_win_state()
                                     nb_win += 1
                                     nb_words.append(nb)
-                                    self.df_state_action = pd.concat([self.df_state_action,random_ia.save_state_action(all_colors)])
+                                    try:
+                                        self.df_state_action = pd.concat([self.df_state_action,random_ia.save_state_action(all_colors)])
+                                    except:
+                                        pass
 
                                 if WIN or DEFEAT:
                                     #time.sleep(5)
