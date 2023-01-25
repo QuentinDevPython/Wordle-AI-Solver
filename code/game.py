@@ -45,7 +45,7 @@ class Game:
         pygame.font.init()
 
         # Init the window dimensions
-        self.WINDOW_HEIGHT = 920
+        self.WINDOW_HEIGHT = 720
         self.WINDOW_WIDTH = 950
         self.WINDOW_GRID_WIDTH = 600
 
@@ -523,7 +523,7 @@ class Game:
                     # suppression des colonnes
                     self.df_state_action = self.df_state_action.drop(columns=cols_to_drop)
 
-                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia.csv")
+                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia_v1.csv")
 
                     print('WIN :', nb_win)
                     print(nb_words)
