@@ -341,19 +341,19 @@ class Game:
 
         # CheckBox 5
         checkbox5 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 230, 20, 20)
-        if not self.checkboxes[3]:
+        if not self.checkboxes[4]:
             pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
         else:
             pygame.draw.rect(self.screen, self.GREY, checkbox5, border_radius=3)
         pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - MINIMAX -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-204, self.TOP_MARGIN//2 + 241))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-201, self.TOP_MARGIN//2 + 241))
         self.screen.blit(ia, surface)
 
         # CheckBox 6
         checkbox6 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 275, 20, 20)
-        if not self.checkboxes[3]:
+        if not self.checkboxes[5]:
             pygame.draw.rect(self.screen, self.GREY, checkbox6, width=2)
         else:
             pygame.draw.rect(self.screen, self.GREY, checkbox6, border_radius=3)
@@ -459,10 +459,10 @@ class Game:
         Args:
             pos: tuple, position of the cursor where the click is made.
         """
-
+        print(pos)
         # Random IA Box
-        if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
-            if pos[1] > 140 and pos[1] < 160:
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 80 and pos[1] < 100:
                 self.checkboxes = [self.checkboxes[0], False, False, False, False, False]
                 self.checkboxes[0] = not self.checkboxes[0]
 
@@ -529,8 +529,9 @@ class Game:
                     print(nb_words)
 
 
-        if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
-            if pos[1] > 187 and pos[1] < 207:
+        # Algorithmic IA V1
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 127 and pos[1] < 147:
                 self.checkboxes = [False, self.checkboxes[1], False, False, False, False]
                 self.checkboxes[1] = not self.checkboxes[1]
 
@@ -540,133 +541,190 @@ class Game:
                     nb_win = 0
                     nb_words = []
 
+                    algorithmic_ia = AlgorithmicIAV1(self.WORD_TO_GUESS, self.GUESSES)
 
-                    for i in range(1):#len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for chance_number in range(1, algorithmic_ia.CHANCES+1):
+                        
+                        self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                            chance_number
+                        )
 
-                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        self.draw_window()
+                        
+                        if WIN:
+                            self.print_win_state()
+                            nb_win += 1
+                            nb_words.append(nb)
 
-                        algorithmic_ia = AlgorithmicIAV3(self.WORD_TO_GUESS, self.GUESSES)
+                        # if DEFEAT:
+                        #     print(self.WORD_TO_GUESS)
 
-                        all_colors = []
+                        if WIN or DEFEAT:
+                            time.sleep(5)
+                            self.restart_game()
+                            break
 
-                        for chance_number in range(1, algorithmic_ia.CHANCES+1):
-                            
-                            self.GUESSES, WIN, DEFEAT, nb, colors = algorithmic_ia.algorithmic_IA(
-                                chance_number
-                            )
+                        self.update_screen()
 
-                            all_colors.append(colors)
-
-                            self.draw_window()
-                            
-                            if WIN:
-                                self.print_win_state()
-                                nb_win += 1
-                                nb_words.append(nb)
-
-                            # if DEFEAT:
-                            #     print(self.WORD_TO_GUESS)
-
-                            if WIN or DEFEAT:
-                                #time.sleep(5)
-                                try:
-                                    self.df_state_action = pd.concat([self.df_state_action,algorithmic_ia.save_state_action(all_colors)], axis=0)
-                                except:
-                                    pass
-                                self.restart_game()
-                                break
-
-                            self.update_screen()
-
-                            # Random wait time - To humanize the input of values
-                            #time.sleep(random.uniform(0, 2))
-
-                    self.df_state_action.fillna(-1, inplace=True)
-                    
-                    # liste des noms de colonnes à supprimer
-                    cols_to_drop = [
-                        'action',
-                        'guess',
-                        'colored',
-                        'answer'
-                    ]
-
-                    # suppression des colonnes
-                    self.df_state_action = self.df_state_action.drop(columns=cols_to_drop)
-
-                    self.df_state_action.to_csv("ia/RL_ia/data/training_set.csv")
+                        # Random wait time - To humanize the input of values
+                        time.sleep(random.uniform(0, 2))
 
                     print('WIN :', nb_win)
                     print(nb_words)
 
-        # Minimax
-        if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
-            if pos[1] > 232 and pos[1] < 252:
+
+        # Algorithmic IA V2
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 171 and pos[1] < 191:
                 self.checkboxes = [False, False, self.checkboxes[2], False, False, False]
                 self.checkboxes[2] = not self.checkboxes[2]
+
                 if self.checkboxes[2]:
+
+
+                    nb_win = 0
+                    nb_words = []
+
+                    algorithmic_ia = AlgorithmicIAV2(self.WORD_TO_GUESS, self.GUESSES)
+
+                    for chance_number in range(1, algorithmic_ia.CHANCES+1):
+                        
+                        self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                            chance_number
+                        )
+
+                        self.draw_window()
+                        
+                        if WIN:
+                            self.print_win_state()
+                            nb_win += 1
+                            nb_words.append(nb)
+
+                        # if DEFEAT:
+                        #     print(self.WORD_TO_GUESS)
+
+                        if WIN or DEFEAT:
+                            time.sleep(5)
+                            self.restart_game()
+                            break
+
+                        self.update_screen()
+
+                        # Random wait time - To humanize the input of values
+                        time.sleep(random.uniform(0, 2))
+
+                    print('WIN :', nb_win)
+                    print(nb_words)
+
+
+        # Algorithmic IA V3
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 216 and pos[1] < 236:
+                self.checkboxes = [False, False, False, self.checkboxes[3], False, False]
+                self.checkboxes[3] = not self.checkboxes[3]
+
+                if self.checkboxes[3]:
+
+
+                    nb_win = 0
+                    nb_words = []
+
+                    algorithmic_ia = AlgorithmicIAV3(self.WORD_TO_GUESS, self.GUESSES)
+
+                    for chance_number in range(1, algorithmic_ia.CHANCES+1):
+                        
+                        self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                            chance_number
+                        )
+
+                        self.draw_window()
+                        
+                        if WIN:
+                            self.print_win_state()
+                            nb_win += 1
+                            nb_words.append(nb)
+
+                        # if DEFEAT:
+                        #     print(self.WORD_TO_GUESS)
+
+                        if WIN or DEFEAT:
+                            time.sleep(5)
+                            self.restart_game()
+                            break
+
+                        self.update_screen()
+
+                        # Random wait time - To humanize the input of values
+                        time.sleep(random.uniform(0, 2))
+
+                    print('WIN :', nb_win)
+                    print(nb_words)
+
+
+        # Minimax
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 262 and pos[1] < 282:
+                self.checkboxes = [False, False, False, False, self.checkboxes[4], False]
+                self.checkboxes[4] = not self.checkboxes[4]
+
+                if self.checkboxes[4]:
+
                     cpu = int(cpu_count()*0.75)
 
                     nb_win = 0
                     nb_words = []
                     
-                    # 1157 -> 1400
-                    for i in range(1600, 2000):
 
-                        self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                    ia = IAMiniMax(
+                        5,
+                        'dictionary_words_5.txt',
+                        'dictionary_words_answers.txt',
+                        self.GUESSES,
+                        self.WORD_TO_GUESS,
+                        fast_mode=False,
+                        proc_count=cpu
+                    )
 
-                        ia = IAMiniMax(
-                            5,
-                            'dictionary_words_5.txt',
-                            'dictionary_words_answers.txt',
-                            self.GUESSES,
-                            self.WORD_TO_GUESS,
-                            fast_mode=False,
-                            proc_count=cpu
+                    for chance_number in range(1, ia.CHANCES+1):
+
+                        self.GUESSES, WIN, DEFEAT, nb = ia.guess(
+                            chance_number
                         )
+                        self.draw_window()
 
-                        print(self.WORD_TO_GUESS)
+                        if WIN:
+                            self.print_win_state()
+                            nb_win += 1
+                            nb_words.append(nb)
+                            print(self.GUESSES)
+                            print('NB_WORDS :', nb)
+                            print('\n')
+                            self.restart_game()
+                            time.sleep(15)
+                            break
 
-                        for chance_number in range(1, ia.CHANCES+1):
+                        if DEFEAT:
+                            print(self.GUESSES)
+                            print('NB_WORDS :', nb)
+                            print('\n')
+                            self.restart_game()
+                            time.sleep(15)
 
-                            self.GUESSES, WIN, DEFEAT, nb = ia.guess(
-                                chance_number
-                            )
-                            self.draw_window()
-
-                            if WIN:
-                                self.print_win_state()
-                                nb_win += 1
-                                nb_words.append(nb)
-                                print(self.GUESSES)
-                                print('NB_WORDS :', nb)
-                                print('\n')
-                                self.restart_game()
-                                #time.sleep(15)
-                                break
-
-                            if DEFEAT:
-                                print(self.GUESSES)
-                                print('NB_WORDS :', nb)
-                                print('\n')
-                                self.restart_game()
-                                #time.sleep(15)
-
-                            rslt = check_word(self.WORD_TO_GUESS.lower(), self.GUESSES[-1].lower())                            
-                            ia.save_result(self.GUESSES[-1].lower(), rslt)
-                            self.update_screen()
+                        rslt = check_word(self.WORD_TO_GUESS.lower(), self.GUESSES[-1].lower())                            
+                        ia.save_result(self.GUESSES[-1].lower(), rslt)
+                        self.update_screen()
 
                     print('WIN :', nb_win)
                     print(nb_words)
 
 
-        if pos[0] > self.WINDOW_WIDTH-260 and pos[0] < self.WINDOW_WIDTH-240:
-            if pos[1] > 277 and pos[1] < 297:
-                self.checkboxes = [False, False, False, self.checkboxes[3], False, False]
-                self.checkboxes[3] = not self.checkboxes[3]
+        if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
+            if pos[1] > 307 and pos[1] < 327:
+                self.checkboxes = [False, False, False, False, False, self.checkboxes[5]]
+                self.checkboxes[5] = not self.checkboxes[5]
 
 
-
-        if pos[0] > 750 and pos[0] < 815:
-            if pos[1] > 475 and pos[1] < 530:
+        # Restart button
+        if pos[0] > 720 and pos[0] < 790:
+            if pos[1] > 395 and pos[1] < 470:
                 self.restart_game()

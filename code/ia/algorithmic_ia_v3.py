@@ -206,7 +206,7 @@ class AlgorithmicIAV3:
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
         
 
@@ -268,7 +268,7 @@ class AlgorithmicIAV3:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
 
 
     def save_state_action(self, all_colors):
