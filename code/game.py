@@ -45,13 +45,13 @@ class Game:
         pygame.font.init()
 
         # Init the window dimensions
-        self.WINDOW_HEIGHT = 720
+        self.WINDOW_HEIGHT = 750
         self.WINDOW_WIDTH = 950
-        self.WINDOW_GRID_WIDTH = 600
+        self.WINDOW_GRID_WIDTH = 550
 
         # Margins
         self.MARGIN = 10
-        self.TOP_MARGIN = 100
+        self.TOP_MARGIN = 60
         self.LEFT_MARGIN = 100
 
         # Colors
@@ -60,7 +60,7 @@ class Game:
         self.ORANGE = (255, 128, 0)
 
         # Squares size
-        self.SQUARES_SIZE = (self.WINDOW_GRID_WIDTH - 4*self.MARGIN - 2*self.LEFT_MARGIN) // 5
+        self.SQUARES_SIZE = (self.WINDOW_GRID_WIDTH - 4*self.MARGIN - 2*self.LEFT_MARGIN) // 5 - 5
 
         # Letter fonts
         self.LETTERS_FONT = pygame.font.SysFont(
@@ -73,7 +73,7 @@ class Game:
         )
         self.LETTERS_FONT_VERY_SMALL = pygame.font.SysFont(
             "free sans bold",
-            self.SQUARES_SIZE//3
+            self.SQUARES_SIZE//2 - 5
         )
 
         # Guesses
@@ -213,7 +213,7 @@ class Game:
 
         y = self.TOP_MARGIN//2
         for i in range(6):
-            x = self.WINDOW_WIDTH//5
+            x = self.WINDOW_WIDTH//6
             for j in range(5):
 
                 # Letter squares
@@ -243,13 +243,13 @@ class Game:
         """Draw the alphabet letters as a grid of letter squares on the screen"""
         
         # Draw unguessed letters
-        y = self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2 + 50
+        y = self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2 + 30
 
         LETTERS_SIZE = (self.WINDOW_GRID_WIDTH - 4*self.MARGIN - 2*self.LEFT_MARGIN) // 7
         colors = self.determine_color_alphabet()
 
         for i in range(4):
-            x = self.WINDOW_WIDTH//6
+            x = self.WINDOW_WIDTH//9
             if i != 3:
                 for j in range(7):
                     # Letter squares
@@ -293,18 +293,18 @@ class Game:
         """Draw the checkboxes on the screen and fill them if they are pressed"""
 
         # CheckBox 1
-        checkbox1 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 90, 20, 20)
+        checkbox1 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 50, 20, 20)
         if not self.checkboxes[0]:
             pygame.draw.rect(self.screen, self.GREY, checkbox1, width=2)
         else:
             pygame.draw.rect(self.screen, self.GREY, checkbox1, border_radius=3)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - RANDOM -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-160, self.TOP_MARGIN//2 + 100))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-200, self.TOP_MARGIN//2 + 60))
         self.screen.blit(ia, surface)
 
         # CheckBox 2
-        checkbox2 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 135, 20, 20)
+        checkbox2 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 95, 20, 20)
         if not self.checkboxes[1]:
             pygame.draw.rect(self.screen, self.GREY, checkbox2, width=2)
         else:
@@ -312,11 +312,11 @@ class Game:
         pygame.draw.rect(self.screen, self.GREY, checkbox2, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V1 -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 147))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-177, self.TOP_MARGIN//2 + 107))
         self.screen.blit(ia, surface)
 
         # CheckBox 3
-        checkbox3 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 180, 20, 20)
+        checkbox3 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 140, 20, 20)
         if not self.checkboxes[2]:
             pygame.draw.rect(self.screen, self.GREY, checkbox3, width=2)
         else:
@@ -324,11 +324,11 @@ class Game:
         pygame.draw.rect(self.screen, self.GREY, checkbox3, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V2 -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 191))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-177, self.TOP_MARGIN//2 + 151))
         self.screen.blit(ia, surface)
 
         # CheckBox 4
-        checkbox4 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 225, 20, 20)
+        checkbox4 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 185, 20, 20)
         if not self.checkboxes[3]:
             pygame.draw.rect(self.screen, self.GREY, checkbox4, width=2)
         else:
@@ -336,11 +336,11 @@ class Game:
         pygame.draw.rect(self.screen, self.GREY, checkbox4, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - ALGORITHM V3 -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-137, self.TOP_MARGIN//2 + 236))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-177, self.TOP_MARGIN//2 + 196))
         self.screen.blit(ia, surface)
 
         # CheckBox 5
-        checkbox5 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 270, 20, 20)
+        checkbox5 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 230, 20, 20)
         if not self.checkboxes[3]:
             pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
         else:
@@ -348,11 +348,11 @@ class Game:
         pygame.draw.rect(self.screen, self.GREY, checkbox5, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - MINIMAX -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-164, self.TOP_MARGIN//2 + 281))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-204, self.TOP_MARGIN//2 + 241))
         self.screen.blit(ia, surface)
 
         # CheckBox 6
-        checkbox6 = pygame.Rect(self.WINDOW_WIDTH-260, self.TOP_MARGIN//2 + 315, 20, 20)
+        checkbox6 = pygame.Rect(self.WINDOW_WIDTH-300, self.TOP_MARGIN//2 + 275, 20, 20)
         if not self.checkboxes[3]:
             pygame.draw.rect(self.screen, self.GREY, checkbox6, width=2)
         else:
@@ -360,12 +360,12 @@ class Game:
         pygame.draw.rect(self.screen, self.GREY, checkbox6, width=2)
 
         ia = self.LETTERS_FONT_VERY_SMALL.render("IA - DEEP LEARNING -", False, self.GREY)
-        surface = ia.get_rect(center = (self.WINDOW_WIDTH-132, self.TOP_MARGIN//2 + 327))
+        surface = ia.get_rect(center = (self.WINDOW_WIDTH-172, self.TOP_MARGIN//2 + 287))
         self.screen.blit(ia, surface)
 
         # Restart button
         restart_logo = pygame.image.load("restart_logo.png")
-        self.screen.blit(restart_logo, (self.WINDOW_WIDTH-200, self.TOP_MARGIN//2 + 420))
+        self.screen.blit(restart_logo, (self.WINDOW_WIDTH-230, self.TOP_MARGIN//2 + 370))
 
 
     def show_correct_answer(self):
@@ -374,7 +374,7 @@ class Game:
         if len(self.GUESSES) == 6 and self.GUESSES[5] != self.WORD_TO_GUESS:
             GAME_OVER = True
             letters = self.LETTERS_FONT.render(self.WORD_TO_GUESS, False, self.GREY)
-            surface = letters.get_rect(center = (self.WINDOW_WIDTH//2.3, self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2))
+            surface = letters.get_rect(center = (self.WINDOW_WIDTH//3 + 5, self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2 - 5))
             self.screen.blit(letters, surface)
 
 
@@ -446,7 +446,7 @@ class Game:
     def print_win_state(self):
         """Show a win message on the screen when an IA wins the game"""
         letters = self.LETTERS_FONT.render('IA WINS', False, self.GREY)
-        surface = letters.get_rect(center = (self.WINDOW_WIDTH//2.3 - 10, self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2))
+        surface = letters.get_rect(center = (self.WINDOW_WIDTH//3 + 5, self.TOP_MARGIN//2 + 6 * (self.SQUARES_SIZE + self.MARGIN)  + self.TOP_MARGIN//2 - 5))
         self.screen.blit(letters, surface)
         self.update_screen()
 
@@ -541,7 +541,7 @@ class Game:
                     nb_words = []
 
 
-                    for i in range(5):#len(self.WORDLE_ANSWERS_5_LETTERS)):
+                    for i in range(1):#len(self.WORDLE_ANSWERS_5_LETTERS)):
 
                         self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
 
