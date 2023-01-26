@@ -468,65 +468,28 @@ class Game:
 
                 if self.checkboxes[0]:
 
-                    nb_win = 0
-                    nb_words = []
+                    random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
 
-                    for j in range(1):
+                    for chance_number in range(1, random_ia.CHANCES+1):
+                        
+                        self.GUESSES, WIN, DEFEAT = random_ia.random_IA(
+                            chance_number
+                        )
 
-                        for i in range(len(self.WORDLE_ANSWERS_5_LETTERS)):
+                        self.draw_window()
+                        
+                        if WIN:
+                            self.print_win_state()
 
-                            self.WORD_TO_GUESS = self.WORDLE_ANSWERS_5_LETTERS[i].upper()
+                        if WIN or DEFEAT:
+                            time.sleep(5)
+                            self.restart_game()
+                            break
 
-                            random_ia = RandomIA(self.WORD_TO_GUESS, self.GUESSES)
+                        self.update_screen()
 
-                            all_colors = []
-
-                            for chance_number in range(1, random_ia.CHANCES+1):
-                                
-                                self.GUESSES, WIN, DEFEAT, nb, colors = random_ia.random_IA(
-                                    chance_number
-                                )
-
-                                all_colors.append(colors)
-
-                                self.draw_window()
-                                
-                                if WIN:
-                                    self.print_win_state()
-                                    nb_win += 1
-                                    nb_words.append(nb)
-                                    try:
-                                        self.df_state_action = pd.concat([self.df_state_action,random_ia.save_state_action(all_colors)])
-                                    except:
-                                        pass
-
-                                if WIN or DEFEAT:
-                                    #time.sleep(5)
-                                    self.restart_game()
-                                    break
-
-                                self.update_screen()
-
-                                # Random wait time - To humanize the input of values
-                                #time.sleep(random.uniform(0, 2))
-
-                    self.df_state_action.fillna(-1, inplace=True)
-                    
-                    # liste des noms de colonnes à supprimer
-                    cols_to_drop = [
-                        'action',
-                        'guess',
-                        'colored',
-                        'answer'
-                    ]
-
-                    # suppression des colonnes
-                    self.df_state_action = self.df_state_action.drop(columns=cols_to_drop)
-
-                    self.df_state_action.to_csv("ia/RL_ia/data/training_set_random_ia_v1.csv")
-
-                    print('WIN :', nb_win)
-                    print(nb_words)
+                        # Random wait time - To humanize the input of values
+                        time.sleep(random.uniform(0, 2))
 
 
         # Algorithmic IA V1
@@ -536,10 +499,6 @@ class Game:
                 self.checkboxes[1] = not self.checkboxes[1]
 
                 if self.checkboxes[1]:
-
-
-                    nb_win = 0
-                    nb_words = []
 
                     algorithmic_ia = AlgorithmicIAV1(self.WORD_TO_GUESS, self.GUESSES)
 
@@ -553,11 +512,6 @@ class Game:
                         
                         if WIN:
                             self.print_win_state()
-                            nb_win += 1
-                            nb_words.append(nb)
-
-                        # if DEFEAT:
-                        #     print(self.WORD_TO_GUESS)
 
                         if WIN or DEFEAT:
                             time.sleep(5)
@@ -568,9 +522,6 @@ class Game:
 
                         # Random wait time - To humanize the input of values
                         time.sleep(random.uniform(0, 2))
-
-                    print('WIN :', nb_win)
-                    print(nb_words)
 
 
         # Algorithmic IA V2
@@ -581,15 +532,11 @@ class Game:
 
                 if self.checkboxes[2]:
 
-
-                    nb_win = 0
-                    nb_words = []
-
                     algorithmic_ia = AlgorithmicIAV2(self.WORD_TO_GUESS, self.GUESSES)
 
                     for chance_number in range(1, algorithmic_ia.CHANCES+1):
                         
-                        self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                        self.GUESSES, WIN, DEFEAT = algorithmic_ia.algorithmic_IA(
                             chance_number
                         )
 
@@ -597,11 +544,6 @@ class Game:
                         
                         if WIN:
                             self.print_win_state()
-                            nb_win += 1
-                            nb_words.append(nb)
-
-                        # if DEFEAT:
-                        #     print(self.WORD_TO_GUESS)
 
                         if WIN or DEFEAT:
                             time.sleep(5)
@@ -612,9 +554,6 @@ class Game:
 
                         # Random wait time - To humanize the input of values
                         time.sleep(random.uniform(0, 2))
-
-                    print('WIN :', nb_win)
-                    print(nb_words)
 
 
         # Algorithmic IA V3
@@ -625,15 +564,11 @@ class Game:
 
                 if self.checkboxes[3]:
 
-
-                    nb_win = 0
-                    nb_words = []
-
                     algorithmic_ia = AlgorithmicIAV3(self.WORD_TO_GUESS, self.GUESSES)
 
                     for chance_number in range(1, algorithmic_ia.CHANCES+1):
                         
-                        self.GUESSES, WIN, DEFEAT, nb = algorithmic_ia.algorithmic_IA(
+                        self.GUESSES, WIN, DEFEAT = algorithmic_ia.algorithmic_IA(
                             chance_number
                         )
 
@@ -641,11 +576,6 @@ class Game:
                         
                         if WIN:
                             self.print_win_state()
-                            nb_win += 1
-                            nb_words.append(nb)
-
-                        # if DEFEAT:
-                        #     print(self.WORD_TO_GUESS)
 
                         if WIN or DEFEAT:
                             time.sleep(5)
@@ -656,9 +586,6 @@ class Game:
 
                         # Random wait time - To humanize the input of values
                         time.sleep(random.uniform(0, 2))
-
-                    print('WIN :', nb_win)
-                    print(nb_words)
 
 
         # Minimax
@@ -670,11 +597,7 @@ class Game:
                 if self.checkboxes[4]:
 
                     cpu = int(cpu_count()*0.75)
-
-                    nb_win = 0
-                    nb_words = []
                     
-
                     ia = IAMiniMax(
                         5,
                         'dictionary_words_5.txt',
@@ -687,26 +610,18 @@ class Game:
 
                     for chance_number in range(1, ia.CHANCES+1):
 
-                        self.GUESSES, WIN, DEFEAT, nb = ia.guess(
+                        self.GUESSES, WIN, DEFEAT = ia.guess(
                             chance_number
                         )
                         self.draw_window()
 
                         if WIN:
                             self.print_win_state()
-                            nb_win += 1
-                            nb_words.append(nb)
-                            print(self.GUESSES)
-                            print('NB_WORDS :', nb)
-                            print('\n')
                             self.restart_game()
                             time.sleep(15)
                             break
 
                         if DEFEAT:
-                            print(self.GUESSES)
-                            print('NB_WORDS :', nb)
-                            print('\n')
                             self.restart_game()
                             time.sleep(15)
 
@@ -714,10 +629,7 @@ class Game:
                         ia.save_result(self.GUESSES[-1].lower(), rslt)
                         self.update_screen()
 
-                    print('WIN :', nb_win)
-                    print(nb_words)
-
-
+        # To implement Deep Learning
         if pos[0] > self.WINDOW_WIDTH-300 and pos[0] < self.WINDOW_WIDTH-280:
             if pos[1] > 307 and pos[1] < 327:
                 self.checkboxes = [False, False, False, False, False, self.checkboxes[5]]
