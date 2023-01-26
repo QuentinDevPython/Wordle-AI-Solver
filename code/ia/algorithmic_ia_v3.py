@@ -206,7 +206,7 @@ class AlgorithmicIAV3:
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+            return self.GUESSES, self.WIN, self.DEFEAT
 
         
 
@@ -268,9 +268,9 @@ class AlgorithmicIAV3:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+        return self.GUESSES, self.WIN, self.DEFEAT
 
-
+    # Can be implemented to save data for Deep Learning
     def save_state_action(self, all_colors):
         """
         this function builds a dataframe with the current game guesses and results.

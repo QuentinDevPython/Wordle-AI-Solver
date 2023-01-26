@@ -94,7 +94,7 @@ class RandomIA:
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+            return self.GUESSES, self.WIN, self.DEFEAT
 
         # Boucle sur le mot suggéré
         for i in range(len(guess)):
@@ -154,9 +154,10 @@ class RandomIA:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number, colors
+        return self.GUESSES, self.WIN, self.DEFEAT
 
 
+    # Can be implemented to save data for Deep Learning
     def save_state_action(self, all_colors):
         """
         this function builds a dataframe with the current game guesses and results.

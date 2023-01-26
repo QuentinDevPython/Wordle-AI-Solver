@@ -134,7 +134,7 @@ class AlgorithmicIAV1:
         # Si le mot est trouvé
         if guess == self.WORD_TO_GUESS:
             self.WIN = True
-            return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+            return self.GUESSES, self.WIN, self.DEFEAT
 
         # Connaître les couleurs renvoyées par le jeu
         colors = []
@@ -200,4 +200,4 @@ class AlgorithmicIAV1:
         if chance_number == 6:
             self.DEFEAT = True
 
-        return self.GUESSES, self.WIN, self.DEFEAT, chance_number
+        return self.GUESSES, self.WIN, self.DEFEAT
